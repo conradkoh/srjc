@@ -1,8 +1,11 @@
-'use client';
-
 import { PresentationContainer } from '@/modules/presentation/presentation-container';
 import { PresentationControls } from '@/modules/presentation/presentation-controls';
 import { Slide } from '@/modules/presentation/slide';
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Spiritual Appetites | 25th March 2025',
+  description: 'Cell Group sharing on Spiritual Appetites',
+};
 
 export default function SpiritualAppetitesPresentation() {
   // Using a fixed, predictable presentation key for this presentation

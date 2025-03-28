@@ -1,6 +1,6 @@
-# NextJS Convex Starter App
+# SRJC - Bethel Assembly of God Cell Group
 
-This is a starter application using NextJS and Convex, managed with NX for monorepo capabilities.
+SRJC is a cell group within Bethel Assembly of God church. This application serves to support the cell group's activities and community engagement.
 
 ## Getting Started
 ### Pre-requisites
@@ -36,6 +36,14 @@ This will start:
 
 - The webapp at http://localhost:3000
 - The Convex backend development server
+
+## Why Convex?
+
+Convex is chosen as the backend service for its simplicity, transactionality, and reactivity, allowing for efficient and effective development.
+
+# NextJS Convex Starter App
+
+This is a starter application using NextJS and Convex, managed with NX for monorepo capabilities.
 
 ## NX Configuration
 

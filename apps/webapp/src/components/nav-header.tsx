@@ -19,7 +19,7 @@ export function NavHeader() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold flex items-center">
-              <span className="mr-1">✝️</span> SRJC
+              <span className="mr-1">✝︎</span> SRJC
             </Link>
 
             <nav className="ml-10 flex items-center space-x-1">

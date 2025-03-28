@@ -4,7 +4,6 @@ import { api } from '@workspace/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 
 export default function Home() {
-  const appInfo = useQuery(api.appinfo.get);
   return (
     <div className="container max-w-3xl mx-auto px-4 py-12">
       <section className="text-center mb-12">
@@ -17,10 +16,6 @@ export default function Home() {
       <section>
         <PresentationsGrid />
       </section>
-
-      <div className="mt-12 text-center text-sm text-muted-foreground">
-        App Version: {appInfo?.version}
-      </div>
     </div>
   );
 }

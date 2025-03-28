@@ -13,7 +13,7 @@ export default function SpiritualAppetitesPresentation() {
 
   return (
     <>
-      <PresentationContainer totalSlides={8} presentationKey={presentationKey}>
+      <PresentationContainer totalSlides={10} presentationKey={presentationKey}>
         <PresentationControls />
 
         {/* Title Slide */}
@@ -197,31 +197,60 @@ export default function SpiritualAppetitesPresentation() {
           </div>
         </Slide>
 
-        {/* Psalm Slide */}
+        {/* Hungering/Thirsting for Righteousness Slide */}
         <Slide
           index={6}
+          className="bg-gradient-to-br from-background to-slate-50 dark:from-background dark:to-slate-950/50"
+        >
+          <div className="max-w-6xl w-full mx-auto px-4 h-full flex flex-col justify-center">
+            <h2 className="text-5xl font-bold text-center">
+              <span className="border-b-4 border-blue-500 pb-2">
+                Hungering / Thirsting for righteousness
+              </span>
+            </h2>
+          </div>
+        </Slide>
+
+        {/* Psalm Slide */}
+        <Slide
+          index={7}
           className="text-center bg-gradient-to-r from-slate-50 to-background dark:from-slate-950/50 dark:to-background"
         >
           <div className="max-w-5xl mx-auto w-full px-4">
-            <h2 className="mb-12 text-4xl font-semibold text-blue-700 dark:text-blue-400 flex justify-center items-center">
-              <span className="mr-3">📜</span> Psalm 37:23-24
+            <h2 className="mb-8 text-4xl font-semibold text-blue-700 dark:text-blue-400 flex justify-center items-center">
+              <span className="mr-3">💡</span> The Burden is Light
             </h2>
 
-            <div className="p-14 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 shadow-lg max-w-4xl mx-auto">
-              <div className="space-y-6 text-3xl italic text-slate-800 dark:text-slate-200">
-                <p className="leading-relaxed">The steps of a man are established by the LORD,</p>
-                <p className="leading-relaxed">And He delights in his way</p>
-                <div className="h-0.5 w-24 bg-blue-400 mx-auto my-6" />
-                <p className="leading-relaxed">When he falls, he will not be hurled headlong,</p>
-                <p className="leading-relaxed">Because the LORD is the One who holds his hand ✋</p>
+            <div className="p-4 bg-green-100 dark:bg-green-900/30 rounded-lg shadow-sm max-w-4xl mx-auto mb-6">
+              <p className="text-lg text-center">
+                The LORD will bear our burdens if we follow Him.
+              </p>
+            </div>
+
+            <div className="p-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-4xl mx-auto">
+              <div className="space-y-6 text-2xl font-serif text-gray-800 dark:text-gray-200">
+                <p className="leading-relaxed text-center">
+                  The steps of a man are established by the LORD,
+                </p>
+                <p className="leading-relaxed text-center">And He delights in his way.</p>
+                <div className="h-0.5 w-24 bg-gray-400 mx-auto my-6" />
+                <p className="leading-relaxed text-center">
+                  When he falls, he will not be hurled headlong,
+                </p>
+                <p className="leading-relaxed text-center">
+                  Because the LORD is the One who holds his hand.
+                </p>
               </div>
+              <p className="text-center text-lg text-gray-500 dark:text-gray-400 mt-4">
+                — Psalm 37:23-24
+              </p>
             </div>
           </div>
         </Slide>
 
         {/* Wells Slide */}
         <Slide
-          index={7}
+          index={8}
           className="bg-gradient-to-bl from-background to-slate-50 dark:from-background dark:to-slate-950/50"
         >
           <div className="max-w-6xl w-full mx-auto px-4">
@@ -282,9 +311,57 @@ export default function SpiritualAppetitesPresentation() {
           </div>
         </Slide>
 
+        {/* Actionable Steps Slide */}
+        <Slide
+          index={9}
+          className="bg-gradient-to-r from-background to-slate-50 dark:from-background dark:to-slate-950/50"
+        >
+          <div className="max-w-6xl w-full mx-auto px-4">
+            <h2 className="mb-12 text-4xl font-semibold text-center">
+              <span className="border-b-2 border-blue-500 pb-1">Actionable Steps 🚶</span>
+            </h2>
+
+            <div className="p-8 rounded-lg bg-blue-50 dark:bg-blue-950/30 shadow-md max-w-4xl mx-auto mb-10">
+              <p className="text-2xl text-center">
+                Do we hunger and thirst for righteousness? If we did, how would that affect both our
+                introspection and our outlook?
+              </p>
+            </div>
+
+            <div className="max-w-4xl mx-auto">
+              <h3 className="text-3xl font-medium mb-6 text-blue-700 dark:text-blue-400 text-center">
+                A person who thirsts for righteousness:
+              </h3>
+
+              <div className="space-y-6">
+                <div className="p-6 rounded-lg bg-green-50 dark:bg-green-950/30 border-l-4 border-green-500 shadow-md">
+                  <p className="text-2xl flex items-center">
+                    <span className="text-green-600 dark:text-green-400 mr-3">✅</span>
+                    <span>Aims to live righteously</span>
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-lg bg-green-50 dark:bg-green-950/30 border-l-4 border-green-500 shadow-md">
+                  <p className="text-2xl flex items-center">
+                    <span className="text-green-600 dark:text-green-400 mr-3">🤝</span>
+                    <span>Seeks communion with those who live righteously</span>
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-lg bg-green-50 dark:bg-green-950/30 border-l-4 border-green-500 shadow-md">
+                  <p className="text-2xl flex items-center">
+                    <span className="text-green-600 dark:text-green-400 mr-3">📣</span>
+                    <span>Desires to call the unbeliever to repentance</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Slide>
+
         {/* Reflection Questions Slide */}
         <Slide
-          index={8}
+          index={10}
           className="bg-gradient-to-t from-background to-slate-50 dark:from-background dark:to-slate-950/50"
         >
           <div className="max-w-6xl w-full mx-auto px-4">

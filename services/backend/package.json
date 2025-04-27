@@ -5,13 +5,15 @@
   "main": "index.js",
   "scripts": {
     "dev": "convex dev",
-    "deploy": "convex deploy"
+    "deploy": "convex deploy",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "convex": "^1.20.0"
+    "convex": "^1.20.0",
+    "convex-helpers": "^0.1.71"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.28.0",

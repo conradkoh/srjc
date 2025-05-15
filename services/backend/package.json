@@ -6,18 +6,24 @@
   "scripts": {
     "dev": "convex dev",
     "deploy": "convex deploy",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "convex": "^1.20.0",
+    "convex": "^1.24.0",
     "convex-helpers": "^0.1.71"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",
-    "eslint": "^9"
+    "convex-test": "^0.0.36",
+    "eslint": "^9",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.3"
   }
 }

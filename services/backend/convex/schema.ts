@@ -1,6 +1,8 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
+// DEPRECATION NOTICE: The fields `expiresAt` and `expiresAtLabel` in the sessions table are deprecated and no longer used for session expiry. They are only kept for migration compatibility and will be removed in a future migration.
+
 export default defineSchema({
   appInfo: defineTable({
     latestVersion: v.string(),
@@ -9,6 +11,11 @@ export default defineSchema({
     key: v.string(), // The presentation key that identifies this presentation
     currentSlide: v.number(), // The current slide number
     lastUpdated: v.number(), // Timestamp of last update
+    activePresentation: v.optional(
+      v.object({
+        presenterId: v.string(), // Session ID of the current presenter
+      })
+    ), // Optional object containing presenter information
   }).index('by_key', ['key']),
 
   // auth
@@ -19,23 +26,26 @@ export default defineSchema({
         name: v.string(),
         username: v.string(),
         email: v.string(),
+        recoveryCode: v.optional(v.string()),
       }),
       v.object({
         type: v.literal('anonymous'),
         name: v.string(), //system generated name
+        recoveryCode: v.optional(v.string()),
       })
     )
   )
     .index('by_username', ['username'])
-    .index('by_email', ['email']),
+    .index('by_email', ['email'])
+    .index('by_name', ['name']),
 
   //sessions
   sessions: defineTable({
     sessionId: v.string(), //this is provided by the client
     userId: v.id('users'), // null means session exists but not authenticated
     createdAt: v.number(),
-    expiresAt: v.number(),
-    expiresAtLabel: v.string(),
+    expiresAt: v.optional(v.number()), // DEPRECATED: No longer used for session expiry. Kept for migration compatibility.
+    expiresAtLabel: v.optional(v.string()), // DEPRECATED: No longer used for session expiry. Kept for migration compatibility.
   }).index('by_sessionId', ['sessionId']),
 
   //login codes for cross-device authentication

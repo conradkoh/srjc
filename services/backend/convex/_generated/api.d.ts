@@ -16,7 +16,10 @@ import type {
 import type * as appinfo from "../appinfo.js";
 import type * as auth from "../auth.js";
 import type * as cleanupTasks from "../cleanupTasks.js";
+import type * as crypto from "../crypto.js";
+import type * as migration from "../migration.js";
 import type * as presentations from "../presentations.js";
+import type * as serviceDesk from "../serviceDesk.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -30,7 +33,10 @@ declare const fullApi: ApiFromModules<{
   appinfo: typeof appinfo;
   auth: typeof auth;
   cleanupTasks: typeof cleanupTasks;
+  crypto: typeof crypto;
+  migration: typeof migration;
   presentations: typeof presentations;
+  serviceDesk: typeof serviceDesk;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

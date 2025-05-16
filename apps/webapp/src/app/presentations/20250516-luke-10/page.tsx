@@ -1,43 +1,22 @@
-'use client';
-
 import { PresentationContainer } from '@/modules/presentation/presentation-container';
 import { PresentationControls } from '@/modules/presentation/presentation-controls';
 import { Slide } from '@/modules/presentation/slide';
 import type { Metadata } from 'next';
-import { useEffect, useRef } from 'react';
 
-// YouTube video player component with auto-play functionality
+export const metadata: Metadata = {
+  title: 'Making a Difference | May 16, 2025',
+  description: 'Cell Group sharing on Luke 10: The Good Samaritan and Martha & Mary',
+};
+
+// Simple YouTube video component without autoplay functionality
 function YouTubeVideo() {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  useEffect(() => {
-    // This will run when the component mounts (when the slide becomes visible)
-    const playVideo = () => {
-      if (iframeRef.current) {
-        // Add autoplay to the src to ensure it plays immediately
-        const currentSrc = iframeRef.current.src;
-        iframeRef.current.src = `${currentSrc}${currentSrc.includes('?') ? '&' : '?'}autoplay=1`;
-      }
-    };
-
-    playVideo();
-
-    return () => {
-      // Clean up if needed when slide changes
-      if (iframeRef.current) {
-        iframeRef.current.src = iframeRef.current.src.replace('autoplay=1', '');
-      }
-    };
-  }, []);
-
   return (
     <div className="w-full flex justify-center">
       <iframe
-        ref={iframeRef}
         className="w-full max-w-2xl aspect-video rounded-xl shadow-lg"
         src="https://www.youtube.com/embed/zGxT9mqPOzk"
         title="The Importance of Focus"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
       />
     </div>
@@ -179,6 +158,9 @@ export default function MakingADifferencePresentation() {
 
             <div className="max-w-4xl mx-auto mt-10">
               <YouTubeVideo />
+              <p className="text-center mt-4 text-gray-500 dark:text-gray-400 text-sm">
+                Click the play button to watch the video
+              </p>
             </div>
           </div>
         </Slide>

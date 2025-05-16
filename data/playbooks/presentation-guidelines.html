@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Presentation Guidelines</title>
+  </head>
+  <body>
+    <h1>Presentation Guidelines</h1>
+
+    <h2>1. File Structure & Organization</h2>
+    <p>
+      All presentations must follow the established file structure for
+      consistency and maintainability.
+    </p>
+
+    <h3>1.1 Directory Structure</h3>
+    <pre>
+apps/webapp/src/app/presentations/
+├── layout.tsx                   # Shared layout for all presentations
+├── page.tsx                     # Optional index page
+├── YYYYMMDD-presentation-name/  # Date prefix naming convention
+│   ├── page.tsx                 # Main presentation file
+│   └── [...other files]         # Optional supporting files</pre
+    >
+
+    <h3>1.2 Naming Conventions</h3>
+    <ul>
+      <li>
+        Use <code>YYYYMMDD-presentation-name</code> format for directory names
+      </li>
+      <li>Use kebab-case for all naming (lowercase with hyphens)</li>
+      <li>
+        Include the date in the format YYYYMMDD to allow for chronological
+        sorting
+      </li>
+      <li>Use descriptive but concise presentation names</li>
+    </ul>
+
+    <h2>2. Basic Presentation Structure</h2>
+    <p>Every presentation must follow this basic structure:</p>
+
+    <pre>
+import { PresentationContainer } from '@/modules/presentation/presentation-container';
+import { PresentationControls } from '@/modules/presentation/presentation-controls';
+import { Slide } from '@/modules/presentation/slide';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Your Presentation Title | Date',
+  description: 'Brief description of your presentation',
+};
+
+export default function YourPresentationName() {
+  // Use a unique, predictable key for this presentation
+  const presentationKey = 'unique-presentation-id';
+
+  return (
+    &lt;&gt;
+      &lt;PresentationContainer totalSlides={numberOfSlides} presentationKey={presentationKey}&gt;
+        &lt;PresentationControls /&gt;
+        
+        {/* Slides go here */}
+        &lt;Slide index={1} className="..."&gt;
+          {/* Content for slide 1 */}
+        &lt;/Slide&gt;
+        
+        &lt;Slide index={2} className="..."&gt;
+          {/* Content for slide 2 */}
+        &lt;/Slide&gt;
+        
+        {/* More slides... */}
+      &lt;/PresentationContainer&gt;
+    &lt;/&gt;
+  );
+}</pre
+    >
+
+    <div>
+      <strong>Important:</strong> Always set the <code>totalSlides</code> prop
+      to match the exact number of slides in your presentation. The
+      <code>presentationKey</code> should be unique and predictable (typically
+      derived from your presentation name).
+    </div>
+
+    <h2>3. Slide Design Guidelines</h2>
+
+    <h3>3.1 Common Slide Types</h3>
+    <p>
+      Each presentation should include a thoughtful mix of these slide types:
+    </p>
+
+    <table>
+      <tr>
+        <th>Slide Type</th>
+        <th>Purpose</th>
+        <th>Example Elements</th>
+      </tr>
+      <tr>
+        <td>Title</td>
+        <td>Opening slide that introduces the topic</td>
+        <td>Large title, subtitle, scripture reference</td>
+      </tr>
+      <tr>
+        <td>Content</td>
+        <td>Presenting information, explanations</td>
+        <td>Headers, paragraphs, bullet points, images</td>
+      </tr>
+      <tr>
+        <td>Scripture</td>
+        <td>Displaying Bible passages</td>
+        <td>Formatted scripture text, reference, translucent background</td>
+      </tr>
+      <tr>
+        <td>Discussion</td>
+        <td>Prompting group interaction</td>
+        <td>Question text, supporting graphics</td>
+      </tr>
+      <tr>
+        <td>Comparison</td>
+        <td>Contrasting concepts</td>
+        <td>Two-column layout, visual cues for contrast</td>
+      </tr>
+      <tr>
+        <td>Reflection</td>
+        <td>Encouraging personal application</td>
+        <td>Questions, prompts, space for contemplation</td>
+      </tr>
+    </table>
+
+    <h3>3.2 Visual Styling</h3>
+    <p>
+      Follow these visual styling principles for consistent, effective
+      presentations:
+    </p>
+
+    <h4>Backgrounds</h4>
+    <ul>
+      <li>
+        Use gradients for visual interest:
+        <code
+          >bg-gradient-to-b from-background to-slate-100 dark:from-background
+          dark:to-slate-950/50</code
+        >
+      </li>
+      <li>
+        Common gradient directions: <code>to-b</code>, <code>to-r</code>,
+        <code>to-br</code>, <code>to-bl</code>, <code>to-t</code>
+      </li>
+      <li>
+        Always include dark mode variants with the <code>dark:</code> prefix
+      </li>
+      <li>
+        Use the base <code>background</code> color as a starting point for
+        gradients
+      </li>
+    </ul>
+
+    <h4>Typography</h4>
+    <ul>
+      <li>
+        Main titles: <code>text-4xl sm:text-5xl md:text-6xl font-bold</code>
+      </li>
+      <li>Section headers: <code>text-3xl sm:text-4xl font-semibold</code></li>
+      <li>
+        Subheadings: <code>text-xl sm:text-2xl sm:text-3xl font-medium</code>
+      </li>
+      <li>
+        Body text: <code>text-base sm:text-lg md:text-xl</code> for optimal
+        mobile readability
+      </li>
+      <li>
+        Scripture text: <code>font-serif text-lg sm:text-xl md:text-2xl</code>
+      </li>
+      <li>Notes or citations: <code>text-base sm:text-lg</code></li>
+    </ul>
+
+    <h4>Layout & Spacing</h4>
+    <ul>
+      <li>
+        Page padding: <code>px-4 sm:px-6</code> to ensure content doesn't touch
+        screen edges on mobile
+      </li>
+      <li>
+        Maximum content width: <code>max-w-5xl</code> or
+        <code>max-w-6xl</code> for full slides
+      </li>
+      <li>
+        Content sections: <code>max-w-4xl mx-auto</code> for focused readable
+        blocks
+      </li>
+      <li>
+        Responsive padding: <code>p-4 sm:p-6 md:p-8</code> for properly scaled
+        containers
+      </li>
+      <li>
+        Vertical spacing: <code>space-y-4 sm:space-y-6</code> to optimize
+        spacing across devices
+      </li>
+      <li>
+        Use <code>mb-6 sm:mb-10</code> for responsive spacing after headings
+      </li>
+      <li>
+        Grid layouts: <code>grid grid-cols-1 md:grid-cols-2</code> or
+        <code>grid grid-cols-1 md:grid-cols-3</code> to stack on mobile
+      </li>
+    </ul>
+
+    <h4>Color Palette</h4>
+    <p>Use these color combinations for consistency across presentations:</p>
+
+    <table>
+      <tr>
+        <th>Purpose</th>
+        <th>Default Color</th>
+        <th>Dark Mode</th>
+      </tr>
+      <tr>
+        <td>Primary accent</td>
+        <td>blue-600</td>
+        <td>blue-400</td>
+      </tr>
+      <tr>
+        <td>Info/Highlight boxes</td>
+        <td>blue-50</td>
+        <td>blue-950/30</td>
+      </tr>
+      <tr>
+        <td>Success/Positive</td>
+        <td>green-600</td>
+        <td>green-400</td>
+      </tr>
+      <tr>
+        <td>Error/Negative</td>
+        <td>red-600</td>
+        <td>red-400</td>
+      </tr>
+      <tr>
+        <td>Warning/Caution</td>
+        <td>amber-600</td>
+        <td>amber-400</td>
+      </tr>
+      <tr>
+        <td>Scripture background</td>
+        <td>gray-100</td>
+        <td>gray-800</td>
+      </tr>
+    </table>
+
+    <h4>UI Elements</h4>
+    <ul>
+      <li>
+        Cards:
+        <code>rounded-lg bg-[color]-50 dark:bg-[color]-950/30 shadow-md</code>
+      </li>
+      <li>
+        Borders: <code>border-l-4 border-[color]-500</code> for emphasis strips
+      </li>
+      <li>
+        Emphasis: <code>border-b-2 border-blue-500 pb-1</code> for underlined
+        headers
+      </li>
+      <li>
+        Icons: Use emojis or Lucide icons with proper sizing (<code
+          >h-4 w-4</code
+        >)
+      </li>
+    </ul>
+
+    <h2>4. Content Design Patterns</h2>
+
+    <h3>4.1 Title Slides</h3>
+    <pre>
+&lt;Slide
+  index={1}
+  className="text-center bg-gradient-to-b from-background to-slate-100 dark:from-background dark:to-slate-900"
+&gt;
+  &lt;div className="max-w-5xl mx-auto"&gt;
+    &lt;h1 className="mb-10 text-6xl font-bold tracking-tight"&gt;
+      What are you
+      &lt;span className="text-blue-600 dark:text-blue-400"&gt; thirsting &lt;/span&gt;
+      for? 💧
+    &lt;/h1&gt;
+    &lt;div className="max-w-3xl mx-auto p-8 border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/30 rounded-r-lg text-2xl italic"&gt;
+      &lt;p&gt;Blessed are those who hunger and thirst for righteousness,&lt;/p&gt;
+      &lt;p&gt;for they will be filled. ✨&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;p className="mt-8 text-xl font-medium"&gt;Matthew 5:6&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/Slide&gt;</pre
+    >
+
+    <h3>4.2 Section Headers</h3>
+    <pre>
+&lt;h2 className="mb-12 text-4xl font-semibold text-center"&gt;
+  &lt;span className="border-b-2 border-blue-500 pb-1"&gt;
+    Drinking from the right "well" 🚰
+  &lt;/span&gt;
+&lt;/h2&gt;</pre
+    >
+
+    <h3>4.3 Card Elements</h3>
+    <pre>
+&lt;div className="p-8 rounded-lg bg-blue-50 dark:bg-blue-950/30 shadow-md"&gt;
+  &lt;h3 className="text-2xl font-medium mb-4 text-blue-700 dark:text-blue-400 flex items-center"&gt;
+    &lt;span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2" /&gt;
+    &lt;span className="mr-2"&gt;🧠&lt;/span&gt; Faith vs Knowledge
+  &lt;/h3&gt;
+  &lt;p className="text-xl pl-6 border-l-2 border-blue-300 dark:border-blue-700"&gt;
+    Example text with &lt;span className="text-red-600 dark:text-red-400"&gt;negative example ❌&lt;/span&gt; or
+    &lt;span className="text-green-600 dark:text-green-400"&gt;positive example ✅&lt;/span&gt;
+  &lt;/p&gt;
+&lt;/div&gt;</pre
+    >
+
+    <h3>4.4 Scripture Formatting</h3>
+    <pre>
+&lt;div className="p-10 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-4xl mx-auto"&gt;
+  &lt;div className="space-y-6 text-2xl font-serif text-gray-800 dark:text-gray-200"&gt;
+    &lt;p className="leading-relaxed text-center"&gt;
+      The steps of a man are established by the LORD,
+    &lt;/p&gt;
+    &lt;p className="leading-relaxed text-center"&gt;And He delights in his way.&lt;/p&gt;
+    &lt;div className="h-0.5 w-24 bg-gray-400 mx-auto my-6" /&gt;
+    &lt;p className="leading-relaxed text-center"&gt;
+      When he falls, he will not be hurled headlong,
+    &lt;/p&gt;
+    &lt;p className="leading-relaxed text-center"&gt;
+      Because the LORD is the One who holds his hand.
+    &lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p className="text-center text-lg text-gray-500 dark:text-gray-400 mt-4"&gt;
+    — Psalm 37:23-24
+  &lt;/p&gt;
+&lt;/div&gt;</pre
+    >
+
+    <h3>4.5 Discussion Questions</h3>
+    <pre>
+&lt;div className="p-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-200 dark:border-indigo-800 shadow-lg max-w-4xl mx-auto"&gt;
+  &lt;p className="text-3xl leading-relaxed"&gt;
+    What is{' '}
+    &lt;span className="font-semibold text-indigo-700 dark:text-indigo-400"&gt;
+      one hunger
+    &lt;/span&gt;{' '}
+    that drives your thoughts and guides your actions that you think is unhealthy? 🤔
+  &lt;/p&gt;
+&lt;/div&gt;</pre
+    >
+
+    <h3>4.6 Grid Layouts</h3>
+    <pre>
+&lt;div className="grid md:grid-cols-2 gap-8"&gt;
+  &lt;div className="p-8 rounded-lg bg-blue-50 dark:bg-blue-950/30 shadow-md border border-blue-100 dark:border-blue-900 h-full"&gt;
+    &lt;h3 className="text-3xl font-medium mb-5 text-blue-700 dark:text-blue-300 flex items-center"&gt;
+      &lt;span className="mr-3"&gt;⏱️&lt;/span&gt; First Column
+    &lt;/h3&gt;
+    &lt;p className="text-2xl"&gt;
+      Content for the first column
+    &lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;div className="p-8 rounded-lg bg-blue-50 dark:bg-blue-950/30 shadow-md border border-blue-100 dark:border-blue-900 h-full"&gt;
+    &lt;h3 className="text-3xl font-medium mb-5 text-blue-700 dark:text-blue-300 flex items-center"&gt;
+      &lt;span className="mr-3"&gt;💰&lt;/span&gt; Second Column
+    &lt;/h3&gt;
+    &lt;p className="text-2xl"&gt;
+      Content for the second column
+    &lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre
+    >
+
+    <h2>5. Best Practices</h2>
+
+    <h3>5.1 General Guidelines</h3>
+    <ul>
+      <li>Keep each slide focused on a single concept or idea</li>
+      <li>Aim for 7-12 slides for a 20-30 minute presentation</li>
+      <li>
+        Include a mix of slide types (text, scripture, questions, comparisons)
+      </li>
+      <li>End with reflection questions or actionable steps</li>
+      <li>
+        Use comments to clearly mark each slide:
+        <code>{/* Title Slide */}</code>
+      </li>
+      <li>
+        Include emoji icons to enhance visual appeal and reinforce concepts
+      </li>
+    </ul>
+
+    <h3>5.2 Performance Considerations</h3>
+    <ul>
+      <li>
+        Keep animations to a minimum (rely on the built-in slide transitions)
+      </li>
+      <li>Use proper image optimization if including images</li>
+      <li>Maintain consistent max-width containers for readability</li>
+      <li>
+        Use responsive design patterns (<code>md:grid-cols-2</code>, etc.)
+      </li>
+    </ul>
+
+    <h3>5.3 Mobile Responsiveness</h3>
+    <p>
+      All presentations must be fully responsive and provide a great experience
+      on mobile devices. Follow these mobile optimization principles:
+    </p>
+
+    <ul>
+      <li>
+        <strong>Progressive enhancement:</strong> Start with mobile-friendly
+        base styles, then enhance for larger screens using breakpoint prefixes
+      </li>
+      <li>
+        <strong>Responsive text sizing:</strong> Use smaller font sizes on
+        mobile with scaled-up sizes for tablets and desktops
+        <pre>text-lg sm:text-xl md:text-2xl</pre>
+      </li>
+      <li>
+        <strong>Reduced padding on mobile:</strong> Use smaller padding values
+        on mobile, larger on desktop
+        <pre>p-4 sm:p-6 md:p-8</pre>
+      </li>
+      <li>
+        <strong>Stacked layouts on mobile:</strong> Multi-column layouts should
+        stack vertically on smaller screens
+        <pre>grid grid-cols-1 md:grid-cols-2</pre>
+      </li>
+      <li>
+        <strong>Touch-friendly targets:</strong> Ensure interactive elements are
+        at least 44px tall/wide with adequate spacing
+      </li>
+      <li>
+        <strong>Text legibility:</strong> Use a minimum 16px (1rem) font size
+        for body text on mobile, with adequate line spacing
+      </li>
+      <li>
+        <strong>Reduced vertical margins:</strong> Use smaller vertical margins
+        on mobile to maximize visible content
+        <pre>mb-4 sm:mb-6 md:mb-8</pre>
+      </li>
+      <li>
+        <strong>Screen edge padding:</strong> Always include horizontal padding
+        to prevent content from touching screen edges
+        <pre>px-4 sm:px-6</pre>
+      </li>
+    </ul>
+
+    <div>
+      <strong>Testing:</strong> Always test your presentation on multiple device
+      sizes before considering it complete. Ensure that all text is readable and
+      elements maintain proper spacing on small screens.
+    </div>
+
+    <h3>5.4 Content Structure</h3>
+    <p>Effective presentations typically follow this structure:</p>
+    <ol>
+      <li>
+        <strong>Title/Introduction Slide:</strong> Clearly state the topic with
+        a compelling visual
+      </li>
+      <li>
+        <strong>Scripture Foundation:</strong> Present the key biblical text(s)
+      </li>
+      <li>
+        <strong>Content Development:</strong> 3-5 slides explaining the topic
+      </li>
+      <li><strong>Application:</strong> How this applies to the audience</li>
+      <li>
+        <strong>Discussion/Interaction:</strong> Questions or prompts for
+        engagement
+      </li>
+      <li>
+        <strong>Reflection/Conclusion:</strong> Final thoughts or actionable
+        steps
+      </li>
+    </ol>
+
+    <div>
+      <strong>Accessibility Tip:</strong> Use semantic HTML elements
+      (<code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, etc.) and maintain good
+      color contrast ratios. Avoid relying solely on color to convey meaning.
+    </div>
+
+    <h2>6. Syncing & Presentation Features</h2>
+    <p>The presentation framework includes powerful syncing features:</p>
+
+    <h3>6.1 Presentation Controls</h3>
+    <ul>
+      <li>
+        <strong>Navigation:</strong> Arrow buttons for previous/next slide
+      </li>
+      <li><strong>Fullscreen:</strong> Toggle fullscreen mode</li>
+      <li>
+        <strong>Sync:</strong> Presenter/viewer modes for synchronized
+        presentations
+      </li>
+      <li>
+        <strong>Share:</strong> Generate shareable links to specific slides
+      </li>
+    </ul>
+
+    <h3>6.2 Presentation Modes</h3>
+    <ul>
+      <li>
+        <strong>Presenter Mode:</strong> Control the slides that others see
+      </li>
+      <li>
+        <strong>Follower Mode:</strong> View slides controlled by the presenter
+      </li>
+      <li>
+        <strong>Solo Mode:</strong> Navigate independently even during a
+        presentation
+      </li>
+    </ul>
+
+    <div>
+      <strong>Important:</strong> Always set a unique, predictable
+      <code>presentationKey</code> to ensure proper syncing. This should be
+      derived from your presentation name and be consistent across sessions.
+    </div>
+
+    <h2>7. Technical Reference</h2>
+
+    <h3>7.1 Core Components</h3>
+    <ul>
+      <li>
+        <code>PresentationContainer</code>: Wrapper component with syncing
+        capabilities
+      </li>
+      <li><code>PresentationControls</code>: Navigation and control UI</li>
+      <li>
+        <code>Slide</code>: Individual slide component with specified index
+      </li>
+    </ul>
+
+    <h3>7.2 Required Props</h3>
+    <ul>
+      <li>
+        <code>totalSlides</code>: The total number of slides in the presentation
+      </li>
+      <li>
+        <code>presentationKey</code>: A unique identifier for the presentation
+      </li>
+      <li><code>index</code>: The slide number (starting from 1)</li>
+    </ul>
+
+    <h3>7.3 Optional Props</h3>
+    <ul>
+      <li><code>className</code>: Additional CSS classes for customization</li>
+    </ul>
+
+    <h2>8. Examples & Templates</h2>
+
+    <h3>8.1 Minimal Presentation</h3>
+    <pre>
+export default function MinimalPresentation() {
+  const presentationKey = 'minimal-example';
+
+  return (
+    &lt;PresentationContainer totalSlides={3} presentationKey={presentationKey}&gt;
+      &lt;PresentationControls /&gt;
+      
+      &lt;Slide index={1} className="text-center"&gt;
+        &lt;h1 className="text-5xl font-bold"&gt;Presentation Title&lt;/h1&gt;
+      &lt;/Slide&gt;
+      
+      &lt;Slide index={2}&gt;
+        &lt;h2 className="text-4xl font-semibold mb-8"&gt;Main Content&lt;/h2&gt;
+        &lt;p className="text-2xl"&gt;Your content here...&lt;/p&gt;
+      &lt;/Slide&gt;
+      
+      &lt;Slide index={3}&gt;
+        &lt;h2 className="text-4xl font-semibold mb-8"&gt;Thank You&lt;/h2&gt;
+        &lt;p className="text-2xl"&gt;Any questions?&lt;/p&gt;
+      &lt;/Slide&gt;
+    &lt;/PresentationContainer&gt;
+  );
+}</pre
+    >
+
+    <h3>8.2 Common Slide Patterns</h3>
+    <p>
+      Refer to the design patterns in Section 4 for reusable slide templates.
+    </p>
+
+    <h2>9. Publishing Your Presentation</h2>
+
+    <h3>9.1 Registering in Recent Sharings</h3>
+    <p>
+      After creating your presentation, you must register it in the "Recent
+      Sharings" component to make it visible on the presentations index page.
+    </p>
+
+    <ol>
+      <li>
+        Open <code>apps/webapp/src/components/presentations-grid.tsx</code>
+      </li>
+      <li>
+        Add your presentation to the <code>PRESENTATIONS</code> array at the top
+        of the file
+      </li>
+      <li>
+        Follow this template:
+        <pre>
+{
+  id: 'your-presentation-id',
+  title: 'Your Presentation Title',
+  date: 'Month DD, YYYY',
+  description: 'Brief description of your presentation',
+  path: '/presentations/YYYYMMDD-presentation-name',
+}
+        </pre>
+      </li>
+      <li>
+        Place newer presentations at the top of the array to maintain
+        chronological order
+      </li>
+      <li>
+        Make sure the <code>path</code> matches your presentation's directory
+        name
+      </li>
+    </ol>
+
+    <div>
+      <strong>Example:</strong> For a presentation called "Making a Difference"
+      created on May 16, 2025, located at
+      <code>/presentations/20250516-luke-10</code>:
+      <pre>
+{
+  id: 'luke-10',
+  title: 'Making a Difference',
+  date: 'May 16, 2025',
+  description: 'Cell Group sharing on Luke 10: The Good Samaritan and Martha & Mary',
+  path: '/presentations/20250516-luke-10',
+}
+      </pre>
+    </div>
+
+    <p>
+      After adding your presentation to the array, it will automatically appear
+      in the presentations index page, making it discoverable for users.
+    </p>
+  </body>
+</html>

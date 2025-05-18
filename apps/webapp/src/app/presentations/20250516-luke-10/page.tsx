@@ -1,3 +1,4 @@
+import { Discussion } from '@/modules/discussion/discussion';
 import { PresentationContainer } from '@/modules/presentation/presentation-container';
 import { PresentationControls } from '@/modules/presentation/presentation-controls';
 import { Slide } from '@/modules/presentation/slide';
@@ -191,23 +192,29 @@ export default function MakingADifferencePresentation() {
         </Slide>
 
         {/* Discussion Slide */}
-        <Slide
-          index={6}
-          className="text-center bg-gradient-to-t from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={6} className="text-center">
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6">
             <h2 className="mb-6 sm:mb-10 text-3xl sm:text-4xl font-semibold flex justify-center items-center">
               <span className="mr-3">💬</span> Discussion
             </h2>
 
-            <div className="p-4 sm:p-6 md:p-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-200 dark:border-indigo-800 shadow-lg max-w-4xl mx-auto">
-              <p className="text-xl sm:text-2xl md:text-3xl leading-relaxed">
+            <div className="p-4 sm:p-6 md:p-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-200 dark:border-indigo-800 shadow-lg max-w-4xl mx-auto">
+              <p className="text-xl sm:text-2xl md:text-3xl leading-relaxed text-center mb-6">
                 What are some{' '}
                 <span className="font-semibold text-indigo-700 dark:text-indigo-400">
                   doable ways
                 </span>{' '}
                 that we can make a difference to our neighbours as a cell? 🤔
               </p>
+
+              {/* Interactive Discussion Component */}
+              <div className="mt-8">
+                <Discussion
+                  title="Making a Difference"
+                  discussionKey="luke-10-making-difference-discussion"
+                  className="bg-white dark:bg-gray-800"
+                />
+              </div>
             </div>
           </div>
         </Slide>

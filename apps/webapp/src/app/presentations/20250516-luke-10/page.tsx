@@ -34,10 +34,7 @@ export default function MakingADifferencePresentation() {
         <PresentationControls />
 
         {/* Title Slide */}
-        <Slide
-          index={1}
-          className="text-center bg-gradient-to-b from-background to-slate-100 dark:from-background dark:to-slate-900"
-        >
+        <Slide index={1} className="text-center">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
             <h1 className="mb-6 sm:mb-10 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
               Making a<span className="text-blue-600 dark:text-blue-400"> Difference </span>🤲
@@ -51,10 +48,7 @@ export default function MakingADifferencePresentation() {
         </Slide>
 
         {/* The Parable of the Good Samaritan Slide */}
-        <Slide
-          index={2}
-          className="bg-gradient-to-br from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={2} className="">
           <div className="max-w-6xl w-full mx-auto px-4 sm:px-6">
             <h2 className="mb-6 sm:mb-10 text-3xl sm:text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">
@@ -113,10 +107,7 @@ export default function MakingADifferencePresentation() {
         </Slide>
 
         {/* At the Home of Martha and Mary Slide */}
-        <Slide
-          index={3}
-          className="bg-gradient-to-r from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={3} className="">
           <div className="max-w-6xl w-full mx-auto px-4 sm:px-6">
             <h2 className="mb-6 sm:mb-10 text-3xl sm:text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">
@@ -148,10 +139,7 @@ export default function MakingADifferencePresentation() {
         </Slide>
 
         {/* Video Slide */}
-        <Slide
-          index={4}
-          className="bg-gradient-to-tl from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={4} className="">
           <div className="max-w-6xl w-full mx-auto px-4 sm:px-6">
             <h2 className="mb-6 sm:mb-10 text-3xl sm:text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">The Importance of Focus 🎯</span>
@@ -167,10 +155,7 @@ export default function MakingADifferencePresentation() {
         </Slide>
 
         {/* Jesus' Response Slide */}
-        <Slide
-          index={5}
-          className="bg-gradient-to-br from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={5} className="">
           <div className="max-w-6xl w-full mx-auto px-4 sm:px-6">
             <h2 className="mb-6 sm:mb-10 text-3xl sm:text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">Jesus' Response 🗣️</span>
@@ -220,10 +205,7 @@ export default function MakingADifferencePresentation() {
         </Slide>
 
         {/* Reflection Slide */}
-        <Slide
-          index={7}
-          className="bg-gradient-to-bl from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={7} className="">
           <div className="max-w-6xl w-full mx-auto px-4 sm:px-6">
             <h2 className="mb-6 sm:mb-10 text-3xl sm:text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">Reflection 🙏</span>

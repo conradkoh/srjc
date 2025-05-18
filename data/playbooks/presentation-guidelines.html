@@ -136,24 +136,11 @@ export default function YourPresentationName() {
 
     <h4>Backgrounds</h4>
     <ul>
-      <li>
-        Use gradients for visual interest:
-        <code
-          >bg-gradient-to-b from-background to-slate-100 dark:from-background
-          dark:to-slate-950/50</code
-        >
-      </li>
-      <li>
-        Common gradient directions: <code>to-b</code>, <code>to-r</code>,
-        <code>to-br</code>, <code>to-bl</code>, <code>to-t</code>
-      </li>
+      <li>Use solid background colors for clean, readable slides</li>
       <li>
         Always include dark mode variants with the <code>dark:</code> prefix
       </li>
-      <li>
-        Use the base <code>background</code> color as a starting point for
-        gradients
-      </li>
+      <li>Use the base <code>background</code> color as a starting point</li>
     </ul>
 
     <h4>Typography</h4>
@@ -273,7 +260,7 @@ export default function YourPresentationName() {
     <pre>
 &lt;Slide
   index={1}
-  className="text-center bg-gradient-to-b from-background to-slate-100 dark:from-background dark:to-slate-900"
+  className="text-center"
 &gt;
   &lt;div className="max-w-5xl mx-auto"&gt;
     &lt;h1 className="mb-10 text-6xl font-bold tracking-tight"&gt;

@@ -17,10 +17,7 @@ export default function SpiritualAppetitesPresentation() {
         <PresentationControls />
 
         {/* Title Slide */}
-        <Slide
-          index={1}
-          className="text-center bg-gradient-to-b from-background to-slate-100 dark:from-background dark:to-slate-900"
-        >
+        <Slide index={1} className="text-center">
           <div className="max-w-5xl mx-auto">
             <h1 className="mb-10 text-6xl font-bold tracking-tight">
               What are you
@@ -36,10 +33,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Defining "Good" Slide */}
-        <Slide
-          index={2}
-          className="bg-gradient-to-br from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={2} className="">
           <div className="max-w-6xl w-full mx-auto px-4">
             <h2 className="mb-12 text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">
@@ -71,10 +65,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Blindness of Hunger Slide */}
-        <Slide
-          index={3}
-          className="bg-gradient-to-r from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={3} className="">
           <div className="max-w-6xl w-full mx-auto px-4">
             <h2 className="mb-10 text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">Blindness of hunger 👁️‍🗨️</span>
@@ -115,10 +106,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Hunger is not bad Slide */}
-        <Slide
-          index={4}
-          className="bg-gradient-to-bl from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={4} className="">
           <div className="max-w-6xl w-full mx-auto px-4">
             <h2 className="mb-10 text-4xl font-bold text-center text-green-700 dark:text-green-400 flex justify-center items-center">
               <span className="mr-3">🌱</span> Hunger is not a bad thing
@@ -176,10 +164,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Discussion Question Slide */}
-        <Slide
-          index={5}
-          className="text-center bg-gradient-to-t from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={5} className="text-center">
           <div className="max-w-5xl mx-auto w-full px-4">
             <h2 className="mb-12 text-4xl font-semibold flex justify-center items-center">
               <span className="mr-3">💬</span> Discussion Question
@@ -198,10 +183,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Hungering/Thirsting for Righteousness Slide */}
-        <Slide
-          index={6}
-          className="bg-gradient-to-br from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={6} className="">
           <div className="max-w-6xl w-full mx-auto px-4 h-full flex flex-col justify-center">
             <h2 className="text-5xl font-bold text-center">
               <span className="border-b-4 border-blue-500 pb-2">
@@ -212,10 +194,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Psalm Slide */}
-        <Slide
-          index={7}
-          className="text-center bg-gradient-to-r from-slate-50 to-background dark:from-slate-950/50 dark:to-background"
-        >
+        <Slide index={7} className="text-center">
           <div className="max-w-5xl mx-auto w-full px-4">
             <h2 className="mb-8 text-4xl font-semibold text-blue-700 dark:text-blue-400 flex justify-center items-center">
               <span className="mr-3">💡</span> The Burden is Light
@@ -249,10 +228,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Wells Slide */}
-        <Slide
-          index={8}
-          className="bg-gradient-to-bl from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={8} className="">
           <div className="max-w-6xl w-full mx-auto px-4">
             <h2 className="mb-12 text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">
@@ -312,10 +288,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Actionable Steps Slide */}
-        <Slide
-          index={9}
-          className="bg-gradient-to-r from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={9} className="">
           <div className="max-w-6xl w-full mx-auto px-4">
             <h2 className="mb-12 text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">Actionable Steps 🚶</span>
@@ -360,10 +333,7 @@ export default function SpiritualAppetitesPresentation() {
         </Slide>
 
         {/* Reflection Questions Slide */}
-        <Slide
-          index={10}
-          className="bg-gradient-to-t from-background to-slate-50 dark:from-background dark:to-slate-950/50"
-        >
+        <Slide index={10} className="">
           <div className="max-w-6xl w-full mx-auto px-4">
             <h2 className="mb-12 text-4xl font-semibold text-center">
               <span className="border-b-2 border-blue-500 pb-1">Reflection Questions 🪞</span>

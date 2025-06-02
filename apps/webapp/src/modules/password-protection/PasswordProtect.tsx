@@ -19,110 +19,53 @@ import {
   MoreVerticalIcon,
 } from 'lucide-react';
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import { verifyPassword } from './password-utils';
+import { useCallback, useState } from 'react';
+import { usePasswordProtection } from './PasswordProtectContext';
 
 export interface PasswordProtectProps {
-  verifyHash: string;
-  salt: string;
-  localStorageKey: string;
   children: React.ReactNode;
   title?: string;
   description?: string;
+  showActionMenu?: boolean;
 }
 
 export function PasswordProtect({
-  verifyHash,
-  salt,
-  localStorageKey,
   children,
   title = 'Protected Content',
   description = 'Please enter the password to view this content.',
+  showActionMenu = true,
 }: PasswordProtectProps) {
+  const {
+    isAuthorized,
+    isLoading,
+    error,
+    authenticate,
+    logout,
+    temporarilyHide,
+    unhide,
+    isTemporarilyHidden,
+  } = usePasswordProtection();
+
   const [password, setPassword] = useState('');
-  const [isVerified, setIsVerified] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingStorage, setIsCheckingStorage] = useState(true);
-  const [isTemporarilyHidden, setIsTemporarilyHidden] = useState(false);
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  // Check localStorage on mount for existing valid password
-  useEffect(() => {
-    const checkStoredPassword = async () => {
-      try {
-        const storedPassword = localStorage.getItem(localStorageKey);
-        if (storedPassword) {
-          const isValid = await verifyPassword(storedPassword, verifyHash, salt);
-          if (isValid) {
-            setIsVerified(true);
-          } else {
-            // Remove invalid stored password
-            localStorage.removeItem(localStorageKey);
-          }
-        }
-      } catch (err) {
-        console.error('Error checking stored password:', err);
-        // Remove potentially corrupted stored password
-        localStorage.removeItem(localStorageKey);
-      } finally {
-        setIsCheckingStorage(false);
-      }
-    };
-
-    checkStoredPassword();
-  }, [localStorageKey, verifyHash, salt]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      setIsLoading(true);
-      setError('');
-
-      try {
-        const isValid = await verifyPassword(password, verifyHash, salt);
-        if (isValid) {
-          // Store the password in localStorage
-          localStorage.setItem(localStorageKey, password);
-          setIsVerified(true);
-          setPassword(''); // Clear password from memory
-        } else {
-          setError('Incorrect password. Please try again.');
-        }
-      } catch (err) {
-        setError('An error occurred while verifying the password.');
-        console.error('Password verification error:', err);
-      } finally {
-        setIsLoading(false);
+      const success = await authenticate(password);
+      if (success) {
+        setPassword(''); // Clear password from memory
       }
     },
-    [password, verifyHash, salt, localStorageKey]
+    [password, authenticate]
   );
 
-  const handlePasswordChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setPassword(e.target.value);
-      if (error) setError(''); // Clear error when user starts typing
-    },
-    [error]
-  );
-
-  const handleTemporaryHide = useCallback(() => {
-    setIsTemporarilyHidden(true);
-  }, []);
-
-  const handleLock = useCallback(() => {
-    localStorage.removeItem(localStorageKey);
-    setIsVerified(false);
-    setIsTemporarilyHidden(false);
-  }, [localStorageKey]);
-
-  const handleUnhide = useCallback(() => {
-    setIsTemporarilyHidden(false);
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
   }, []);
 
   // Show loading state while checking localStorage
-  if (isCheckingStorage) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
         <div className="flex flex-col items-center space-y-4">
@@ -139,35 +82,37 @@ export function PasswordProtect({
     );
   }
 
-  if (isVerified) {
+  if (isAuthorized) {
     return (
       <div className="relative">
         {/* Action Menu */}
-        <div className="absolute top-2 right-2 z-10">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background/90"
-              >
-                <MoreVerticalIcon className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={handleTemporaryHide} className="cursor-pointer">
-                <HideIcon className="mr-2 h-4 w-4" />
-                Hide temporarily
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLock} className="cursor-pointer text-destructive">
-                <LockIcon className="mr-2 h-4 w-4" />
-                Lock content
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {showActionMenu && (
+          <div className="absolute top-2 right-2 z-10">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background/90"
+                >
+                  <MoreVerticalIcon className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={temporarilyHide} className="cursor-pointer">
+                  <HideIcon className="mr-2 h-4 w-4" />
+                  Hide temporarily
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive">
+                  <LockIcon className="mr-2 h-4 w-4" />
+                  Lock content
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
 
         {/* Content */}
         <div
@@ -182,7 +127,7 @@ export function PasswordProtect({
         {isTemporarilyHidden && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/20 backdrop-blur-sm">
             <Button
-              onClick={handleUnhide}
+              onClick={unhide}
               variant="secondary"
               size="sm"
               className="bg-background/90 backdrop-blur-sm border border-border/50"

@@ -1,15 +1,16 @@
 # Password Protection Module
 
-A client-side password protection utility for React components that allows you to protect content with a password without requiring server-side authentication.
+A comprehensive client-side password protection system for React components with context-based state management and localStorage persistence.
 
 ## Overview
 
-This module provides a simple way to password-protect any React component or content. It uses SHA-256 hashing with salt to prevent rainbow table attacks, using the Web Crypto API for secure password verification while keeping everything client-side. The module includes localStorage persistence to remember valid passwords across browser sessions.
+This module provides both a modern context-based approach and a legacy component-based approach for password-protecting React content. It uses SHA-256 hashing with salt to prevent rainbow table attacks, using the Web Crypto API for secure password verification while keeping everything client-side.
 
 ## Features
 
 - 🔒 **Client-side password protection** - No server required
 - 🔐 **SHA-256 hashing with salt** - Secure password verification with protection against rainbow table attacks
+- 🎯 **Context-based architecture** - Centralized configuration and shared state
 - 💾 **localStorage persistence** - Remembers valid passwords across sessions
 - 🎨 **Beautiful UI** - Built with Shadcn UI components
 - 👁️ **Password visibility toggle** - Show/hide password functionality
@@ -17,6 +18,9 @@ This module provides a simple way to password-protect any React component or con
 - 🚨 **Error handling** - User-friendly error messages
 - 📱 **Responsive design** - Works on all screen sizes
 - 🔧 **TypeScript support** - Fully typed for better DX
+- 🔄 **Backward compatibility** - Legacy component still available
+- 🎛️ **Flexible rendering** - Multiple ways to conditionally show content
+- 🪝 **Custom hook** - Build your own authentication UI
 
 ## Installation
 
@@ -34,40 +38,120 @@ window.generatePasswordHash('your-secret-password', 'your-unique-salt')
 
 This will return a hash like: `ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f`
 
-**Important**: Use a unique salt for each protected component to ensure maximum security.
+**Important**: Use a unique salt for each protected section to ensure maximum security.
 
-### 2. Protect Your Content
+### 2. Context-Based Approach (Recommended)
 
 ```tsx
-import { PasswordProtect } from '@/modules/password-protection';
+import { 
+  PasswordProtectProvider, 
+  PasswordProtect, 
+  PasswordProtectedConditionalRender 
+} from '@/modules/password-protection';
 
-export default function MyProtectedPage() {
+const config = {
+  verifyHash: "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+  salt: "my-unique-salt-string",
+  localStorageKey: "my-protected-content-password"
+};
+
+export default function MyApp() {
   return (
-    <div>
-      <h1>My App</h1>
-      
-      <PasswordProtect 
-        verifyHash="ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
-        salt="my-unique-salt-string"
-        localStorageKey="my-protected-content-password"
-      >
+    <PasswordProtectProvider config={config}>
+      {/* Login UI and main protected content */}
+      <PasswordProtect title="Secure Area">
         <div>
           <h2>Secret Content</h2>
           <p>This content is only visible after entering the correct password!</p>
         </div>
       </PasswordProtect>
-    </div>
+      
+      {/* Additional content that appears when authenticated */}
+      <PasswordProtectedConditionalRender>
+        <div>
+          <h3>Additional Secret Content</h3>
+          <p>This appears automatically when authenticated!</p>
+        </div>
+      </PasswordProtectedConditionalRender>
+    </PasswordProtectProvider>
   );
 }
 ```
 
 ## API Reference
 
-### `PasswordProtect` Component
+### Context-Based Components (Recommended)
 
-The main component that wraps your protected content.
+#### `PasswordProtectProvider`
 
-#### Props
+Provides centralized configuration and state management for all password protection components.
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `PasswordProtectConfig` | ✅ | Configuration object with hash, salt, and localStorage key |
+| `children` | `React.ReactNode` | ✅ | Child components that will have access to the context |
+
+**Config Object:**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `verifyHash` | `string` | ✅ | The SHA-256 hash to verify the password against |
+| `salt` | `string` | ✅ | The salt used for password hashing |
+| `localStorageKey` | `string` | ✅ | The localStorage key to store/retrieve the password |
+
+#### `PasswordProtect`
+
+The main component that provides login UI and wraps protected content.
+
+**Props:**
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `children` | `React.ReactNode` | ✅ | - | The content to protect |
+| `title` | `string` | ❌ | `"Protected Content"` | Title shown on the password form |
+| `description` | `string` | ❌ | `"Please enter the password to view this content."` | Description shown on the password form |
+| `showActionMenu` | `boolean` | ❌ | `true` | Whether to show the action menu (hide/lock options) |
+
+#### `PasswordProtectedConditionalRender`
+
+Conditionally renders children based on authentication status.
+
+**Props:**
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `children` | `React.ReactNode` | ✅ | - | Content to show when authenticated |
+| `fallback` | `React.ReactNode` | ❌ | `null` | Content to show when not authenticated |
+| `showLoadingState` | `boolean` | ❌ | `false` | Whether to show loading spinner during auth check |
+
+#### `usePasswordProtection` Hook
+
+Custom hook that provides access to the password protection context.
+
+**Returns:**
+
+```tsx
+{
+  isAuthorized: boolean;           // Whether user is authenticated
+  isLoading: boolean;              // Whether authentication is in progress
+  error: string;                   // Current error message (if any)
+  authenticate: (password: string) => Promise<boolean>; // Function to authenticate
+  logout: () => void;              // Function to logout and clear storage
+  temporarilyHide: () => void;     // Function to temporarily blur content
+  unhide: () => void;              // Function to remove blur effect
+  isTemporarilyHidden: boolean;    // Whether content is currently blurred
+}
+```
+
+### Legacy Component (Backward Compatibility)
+
+#### `PasswordProtectLegacy`
+
+The original component with individual configuration per instance.
+
+**Props:**
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -78,64 +162,204 @@ The main component that wraps your protected content.
 | `title` | `string` | ❌ | `"Protected Content"` | Title shown on the password form |
 | `description` | `string` | ❌ | `"Please enter the password to view this content."` | Description shown on the password form |
 
-#### Example with Custom Title and Description
+## Usage Examples
+
+### Basic Context-Based Protection
 
 ```tsx
-<PasswordProtect 
-  verifyHash="your-hash-here"
-  salt="admin-panel-salt"
-  localStorageKey="admin-panel-password"
-  title="Confidential Documents"
-  description="Enter the access code to view these documents."
->
-  <YourProtectedContent />
-</PasswordProtect>
+import { PasswordProtectProvider, PasswordProtect } from '@/modules/password-protection';
+
+const config = {
+  verifyHash: "your-hash-here",
+  salt: "secret-page-salt",
+  localStorageKey: "secret-page-password"
+};
+
+function SecretPage() {
+  return (
+    <PasswordProtectProvider config={config}>
+      <PasswordProtect>
+        <div className="p-6">
+          <h1>Secret Information</h1>
+          <p>This is protected content!</p>
+        </div>
+      </PasswordProtect>
+    </PasswordProtectProvider>
+  );
+}
 ```
 
-## localStorage Persistence
-
-The component automatically handles password persistence using localStorage:
-
-### How it works
-
-1. **On mount**: Checks if a password is stored in localStorage using the provided `localStorageKey`
-2. **Validation**: If a stored password exists, it's verified against the `verifyHash`
-3. **Auto-unlock**: If the stored password is valid, the content is automatically unlocked
-4. **Cleanup**: Invalid or corrupted stored passwords are automatically removed
-5. **Storage**: When a user enters a correct password, it's stored in localStorage for future visits
-
-### Storage Keys
-
-Each protected component should use a unique `localStorageKey` to avoid conflicts:
+### Multiple Protected Sections with Shared Authentication
 
 ```tsx
-// Good: Unique keys for different protected areas
-<PasswordProtect 
-  verifyHash="hash1" 
-  localStorageKey="admin-dashboard-password"
->
-  <AdminDashboard />
-</PasswordProtect>
+import { 
+  PasswordProtectProvider, 
+  PasswordProtect, 
+  PasswordProtectedConditionalRender 
+} from '@/modules/password-protection';
 
-<PasswordProtect 
-  verifyHash="hash2" 
-  localStorageKey="financial-reports-password"
->
-  <FinancialReports />
-</PasswordProtect>
+const config = {
+  verifyHash: "your-hash-here",
+  salt: "admin-area-salt",
+  localStorageKey: "admin-area-password"
+};
+
+function AdminDashboard() {
+  return (
+    <PasswordProtectProvider config={config}>
+      <div className="space-y-8">
+        {/* Main login area */}
+        <PasswordProtect title="Admin Dashboard">
+          <div>
+            <h1>Admin Panel</h1>
+            <p>Welcome to the admin area!</p>
+          </div>
+        </PasswordProtect>
+        
+        {/* Additional sections that appear when authenticated */}
+        <PasswordProtectedConditionalRender>
+          <section>
+            <h2>User Management</h2>
+            <p>Manage users here...</p>
+          </section>
+        </PasswordProtectedConditionalRender>
+        
+        <PasswordProtectedConditionalRender>
+          <section>
+            <h2>System Settings</h2>
+            <p>Configure system settings...</p>
+          </section>
+        </PasswordProtectedConditionalRender>
+      </div>
+    </PasswordProtectProvider>
+  );
+}
 ```
 
-### Clearing Stored Passwords
+### Using the Custom Hook
 
-To manually clear a stored password, you can use the browser's developer console:
+```tsx
+import { usePasswordProtection } from '@/modules/password-protection';
 
-```javascript
-// Clear a specific password
-localStorage.removeItem('your-storage-key');
+function CustomAuthComponent() {
+  const { 
+    isAuthorized, 
+    isLoading, 
+    error, 
+    authenticate, 
+    logout 
+  } = usePasswordProtection();
 
-// Clear all localStorage (use with caution)
-localStorage.clear();
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    const success = await authenticate(password);
+    if (success) {
+      setPassword('');
+    }
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isAuthorized) {
+    return (
+      <div>
+        <p>✅ You are authenticated!</p>
+        <button onClick={logout}>Logout</button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <input 
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter password"
+      />
+      <button onClick={handleLogin}>Login</button>
+      {error && <p style={{color: 'red'}}>{error}</p>}
+    </div>
+  );
+}
 ```
+
+### Conditional Rendering with Fallback
+
+```tsx
+import { PasswordProtectedConditionalRender } from '@/modules/password-protection';
+
+function MixedContentPage() {
+  return (
+    <div>
+      {/* Public content */}
+      <header>
+        <h1>Welcome to My Site</h1>
+        <p>This content is visible to everyone.</p>
+      </header>
+
+      {/* Protected content with fallback */}
+      <PasswordProtectedConditionalRender 
+        fallback={
+          <div className="p-4 bg-gray-100 rounded">
+            <p>🔒 Premium content available to authenticated users</p>
+          </div>
+        }
+      >
+        <section className="p-4 bg-green-100 rounded">
+          <h2>Premium Content</h2>
+          <p>This exclusive content is only visible to authenticated users!</p>
+        </section>
+      </PasswordProtectedConditionalRender>
+    </div>
+  );
+}
+```
+
+## Migration Guide
+
+### From Legacy to Context-Based Approach
+
+**Before (Legacy):**
+```tsx
+import { PasswordProtectLegacy } from '@/modules/password-protection';
+
+<PasswordProtectLegacy
+  verifyHash="your-hash"
+  salt="your-salt"
+  localStorageKey="your-key"
+  title="Protected Area"
+>
+  <YourContent />
+</PasswordProtectLegacy>
+```
+
+**After (Context-Based):**
+```tsx
+import { PasswordProtectProvider, PasswordProtect } from '@/modules/password-protection';
+
+const config = {
+  verifyHash: "your-hash",
+  salt: "your-salt",
+  localStorageKey: "your-key"
+};
+
+<PasswordProtectProvider config={config}>
+  <PasswordProtect title="Protected Area">
+    <YourContent />
+  </PasswordProtect>
+</PasswordProtectProvider>
+```
+
+**Benefits of Migration:**
+- Single configuration for multiple protected areas
+- Shared authentication state
+- Ability to use conditional rendering components
+- Access to custom hook for advanced use cases
+- Better performance with centralized state management
 
 ## Utility Functions
 
@@ -155,15 +379,6 @@ console.log(hash); // "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4
 - Throws an error if salt is empty or not a string
 - Provides clear error messages to guide proper usage
 
-```tsx
-// This will throw an error
-try {
-  await generatePasswordHash('password', ''); // Error: Salt is required
-} catch (error) {
-  console.error(error.message); // "Salt is required and must be a non-empty string. Please provide a unique salt for security."
-}
-```
-
 #### `verifyPassword(password: string, hash: string, salt: string): Promise<boolean>`
 
 Verifies a password against a hash using the provided salt.
@@ -171,7 +386,7 @@ Verifies a password against a hash using the provided salt.
 ```tsx
 import { verifyPassword } from '@/modules/password-protection';
 
-const isValid = await verifyPassword('my-password', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'my-unique-salt');
+const isValid = await verifyPassword('my-password', 'hash-here', 'my-unique-salt');
 console.log(isValid); // true or false
 ```
 
@@ -192,106 +407,19 @@ window.generatePasswordHash('my-password', 'my-salt')
 window.generatePasswordHash('my-password') // Error: Both password and salt are required
 ```
 
-The console function provides clear usage instructions when called incorrectly.
-
-## Usage Examples
-
-### Basic Protection
-
-```tsx
-import { PasswordProtect } from '@/modules/password-protection';
-
-function SecretPage() {
-  return (
-    <PasswordProtect 
-      verifyHash="your-hash-here"
-      salt="secret-page-salt"
-      localStorageKey="secret-page-password"
-    >
-      <div className="p-6">
-        <h1>Secret Information</h1>
-        <p>This is protected content!</p>
-      </div>
-    </PasswordProtect>
-  );
-}
-```
-
-### Protecting Part of a Page
-
-```tsx
-import { PasswordProtect } from '@/modules/password-protection';
-
-function MixedContentPage() {
-  return (
-    <div>
-      {/* Public content */}
-      <header>
-        <h1>Welcome to My Site</h1>
-        <p>This content is visible to everyone.</p>
-      </header>
-
-      {/* Protected content */}
-      <PasswordProtect 
-        verifyHash="your-hash-here"
-        salt="members-section-salt"
-        localStorageKey="members-section-password"
-      >
-        <section className="mt-8">
-          <h2>Members Only</h2>
-          <p>This section requires a password to view.</p>
-        </section>
-      </PasswordProtect>
-    </div>
-  );
-}
-```
-
-### Multiple Protected Sections
-
-```tsx
-import { PasswordProtect } from '@/modules/password-protection';
-
-function MultiProtectedPage() {
-  return (
-    <div className="space-y-8">
-      <PasswordProtect 
-        verifyHash="hash-for-section-1"
-        salt="admin-panel-salt"
-        localStorageKey="admin-panel-password"
-        title="Admin Panel"
-        description="Admin access required"
-      >
-        <AdminDashboard />
-      </PasswordProtect>
-
-      <PasswordProtect 
-        verifyHash="hash-for-section-2"
-        salt="financial-data-salt"
-        localStorageKey="financial-data-password"
-        title="Financial Data"
-        description="Finance team access required"
-      >
-        <FinancialReports />
-      </PasswordProtect>
-    </div>
-  );
-}
-```
-
 ## Salt Best Practices
 
 ### 1. **Use Unique Salts**
-Each protected component should use a unique salt to maximize security:
+Each protected section should use a unique salt to maximize security:
 
 ```tsx
 // Good: Different salts for different content
-<PasswordProtect salt="admin-dashboard-2024" ... />
-<PasswordProtect salt="financial-reports-v2" ... />
+const adminConfig = { salt: "admin-dashboard-2024", ... };
+const reportsConfig = { salt: "financial-reports-v2", ... };
 
 // Avoid: Reusing the same salt
-<PasswordProtect salt="my-salt" ... />
-<PasswordProtect salt="my-salt" ... />
+const config1 = { salt: "my-salt", ... };
+const config2 = { salt: "my-salt", ... }; // ❌ Don't do this
 ```
 
 ### 2. **Salt Recommendations**
@@ -303,14 +431,57 @@ Each protected component should use a unique salt to maximize security:
 ### 3. **Example Salt Patterns**
 ```tsx
 // By content type and version
-salt="admin-panel-v1"
-salt="user-data-2024"
-salt="financial-reports-q1-2024"
+salt: "admin-panel-v1"
+salt: "user-data-2024"
+salt: "financial-reports-q1-2024"
 
 // By feature and environment
-salt="beta-features-staging"
-salt="premium-content-prod"
+salt: "beta-features-staging"
+salt: "premium-content-prod"
 ```
+
+## localStorage Persistence
+
+The system automatically handles password persistence using localStorage:
+
+### How it works
+
+1. **On mount**: Checks if a password is stored in localStorage using the provided `localStorageKey`
+2. **Validation**: If a stored password exists, it's verified against the `verifyHash`
+3. **Auto-unlock**: If the stored password is valid, the content is automatically unlocked
+4. **Cleanup**: Invalid or corrupted stored passwords are automatically removed
+5. **Storage**: When a user enters a correct password, it's stored in localStorage for future visits
+
+### Clearing Stored Passwords
+
+To manually clear a stored password, you can use the browser's developer console:
+
+```javascript
+// Clear a specific password
+localStorage.removeItem('your-storage-key');
+
+// Clear all localStorage (use with caution)
+localStorage.clear();
+
+// Or use the logout function from the hook
+const { logout } = usePasswordProtection();
+logout(); // Clears storage and resets state
+```
+
+## Action Menu Features
+
+When content is unlocked, users can:
+
+### **Hide Temporarily**
+- Blurs the content with a smooth transition
+- Adds interaction prevention
+- Shows an overlay with "Show content" button to unhide
+- Does NOT clear localStorage - password remains saved
+
+### **Lock Content**
+- Completely locks the content and returns to password prompt
+- Clears the password from localStorage
+- Resets all states including temporary hide state
 
 ## Security Considerations
 
@@ -327,6 +498,7 @@ salt="premium-content-prod"
    - Adding a simple access layer to internal tools
    - Hiding content that's not meant for general audiences
    - Creating "members-only" sections with shared passwords
+   - Protecting development/staging environments
 
 ### Best Practices
 
@@ -334,23 +506,26 @@ salt="premium-content-prod"
 2. **Rotate passwords**: Change passwords periodically
 3. **Limit scope**: Only protect content that doesn't require high security
 4. **Consider alternatives**: For truly sensitive data, use proper server-side authentication
+5. **Use unique salts**: Different salts for different protected areas
+6. **Monitor access**: Consider adding logging for authentication attempts
 
 ## Styling and Customization
 
-The component uses Shadcn UI components and can be customized through:
+The components use Shadcn UI components and can be customized through:
 
-1. **CSS classes**: The component respects your Tailwind CSS theme
+1. **CSS classes**: The components respect your Tailwind CSS theme
 2. **Theme variables**: Uses CSS custom properties for colors
 3. **Component props**: Customize title and description text
+4. **Custom components**: Use the hook to build completely custom UI
 
 ### Custom Styling Example
 
 ```tsx
 <div className="my-custom-container">
   <PasswordProtect 
-    verifyHash="your-hash"
     title="🔐 Secure Area"
     description="This area contains confidential information."
+    showActionMenu={false} // Hide action menu if desired
   >
     <div className="custom-protected-content">
       {/* Your content */}
@@ -366,6 +541,8 @@ The component uses Shadcn UI components and can be customized through:
 1. **Hash not working**: Make sure you're using the exact hash generated by `window.generatePasswordHash()`
 2. **Import errors**: Ensure you're importing from `@/modules/password-protection`
 3. **Console function not available**: The `window.generatePasswordHash` function is only available in the browser
+4. **Context errors**: Make sure components are wrapped in `PasswordProtectProvider`
+5. **Hook errors**: `usePasswordProtection` must be used within a `PasswordProtectProvider`
 
 ### Debug Mode
 
@@ -387,6 +564,7 @@ When contributing to this module:
 2. Follow the existing code style
 3. Test in multiple browsers
 4. Update this README if adding new features
+5. Ensure backward compatibility
 
 ## License
 

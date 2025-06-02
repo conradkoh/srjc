@@ -24,6 +24,7 @@ import { verifyPassword } from './password-utils';
 
 export interface PasswordProtectProps {
   verifyHash: string;
+  salt: string;
   localStorageKey: string;
   children: React.ReactNode;
   title?: string;
@@ -32,6 +33,7 @@ export interface PasswordProtectProps {
 
 export function PasswordProtect({
   verifyHash,
+  salt,
   localStorageKey,
   children,
   title = 'Protected Content',
@@ -51,7 +53,7 @@ export function PasswordProtect({
       try {
         const storedPassword = localStorage.getItem(localStorageKey);
         if (storedPassword) {
-          const isValid = await verifyPassword(storedPassword, verifyHash);
+          const isValid = await verifyPassword(storedPassword, verifyHash, salt);
           if (isValid) {
             setIsVerified(true);
           } else {
@@ -69,7 +71,7 @@ export function PasswordProtect({
     };
 
     checkStoredPassword();
-  }, [localStorageKey, verifyHash]);
+  }, [localStorageKey, verifyHash, salt]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -78,7 +80,7 @@ export function PasswordProtect({
       setError('');
 
       try {
-        const isValid = await verifyPassword(password, verifyHash);
+        const isValid = await verifyPassword(password, verifyHash, salt);
         if (isValid) {
           // Store the password in localStorage
           localStorage.setItem(localStorageKey, password);
@@ -94,7 +96,7 @@ export function PasswordProtect({
         setIsLoading(false);
       }
     },
-    [password, verifyHash, localStorageKey]
+    [password, verifyHash, salt, localStorageKey]
   );
 
   const handlePasswordChange = useCallback(

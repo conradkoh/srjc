@@ -4,12 +4,12 @@ A client-side password protection utility for React components that allows you t
 
 ## Overview
 
-This module provides a simple way to password-protect any React component or content. It uses SHA-256 hashing with the Web Crypto API for secure password verification while keeping everything client-side. The module includes localStorage persistence to remember valid passwords across browser sessions.
+This module provides a simple way to password-protect any React component or content. It uses SHA-256 hashing with salt to prevent rainbow table attacks, using the Web Crypto API for secure password verification while keeping everything client-side. The module includes localStorage persistence to remember valid passwords across browser sessions.
 
 ## Features
 
 - 🔒 **Client-side password protection** - No server required
-- 🔐 **SHA-256 hashing** - Secure password verification using Web Crypto API
+- 🔐 **SHA-256 hashing with salt** - Secure password verification with protection against rainbow table attacks
 - 💾 **localStorage persistence** - Remembers valid passwords across sessions
 - 🎨 **Beautiful UI** - Built with Shadcn UI components
 - 👁️ **Password visibility toggle** - Show/hide password functionality
@@ -29,10 +29,12 @@ The module is already included in this project. No additional installation requi
 Open your browser's developer console and run:
 
 ```javascript
-window.generatePasswordHash('your-secret-password')
+window.generatePasswordHash('your-secret-password', 'your-unique-salt')
 ```
 
 This will return a hash like: `ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f`
+
+**Important**: Use a unique salt for each protected component to ensure maximum security.
 
 ### 2. Protect Your Content
 
@@ -46,6 +48,7 @@ export default function MyProtectedPage() {
       
       <PasswordProtect 
         verifyHash="ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
+        salt="my-unique-salt-string"
         localStorageKey="my-protected-content-password"
       >
         <div>
@@ -69,6 +72,7 @@ The main component that wraps your protected content.
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `verifyHash` | `string` | ✅ | - | The SHA-256 hash to verify the password against |
+| `salt` | `string` | ✅ | - | The salt used for password hashing |
 | `localStorageKey` | `string` | ✅ | - | The localStorage key to store/retrieve the password |
 | `children` | `React.ReactNode` | ✅ | - | The content to protect |
 | `title` | `string` | ❌ | `"Protected Content"` | Title shown on the password form |
@@ -79,6 +83,7 @@ The main component that wraps your protected content.
 ```tsx
 <PasswordProtect 
   verifyHash="your-hash-here"
+  salt="admin-panel-salt"
   localStorageKey="admin-panel-password"
   title="Confidential Documents"
   description="Enter the access code to view these documents."
@@ -134,27 +139,60 @@ localStorage.clear();
 
 ## Utility Functions
 
-#### `generatePasswordHash(password: string): Promise<string>`
+#### `generatePasswordHash(password: string, salt: string): Promise<string>`
 
-Generates a SHA-256 hash of the provided password.
+Generates a SHA-256 hash of the provided password with salt protection.
 
 ```tsx
 import { generatePasswordHash } from '@/modules/password-protection';
 
-const hash = await generatePasswordHash('my-password');
+const hash = await generatePasswordHash('my-password', 'my-unique-salt');
 console.log(hash); // "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
 ```
 
-#### `verifyPassword(password: string, hash: string): Promise<boolean>`
+**Error Handling:**
+- Throws an error if password is empty or not a string
+- Throws an error if salt is empty or not a string
+- Provides clear error messages to guide proper usage
 
-Verifies a password against a hash.
+```tsx
+// This will throw an error
+try {
+  await generatePasswordHash('password', ''); // Error: Salt is required
+} catch (error) {
+  console.error(error.message); // "Salt is required and must be a non-empty string. Please provide a unique salt for security."
+}
+```
+
+#### `verifyPassword(password: string, hash: string, salt: string): Promise<boolean>`
+
+Verifies a password against a hash using the provided salt.
 
 ```tsx
 import { verifyPassword } from '@/modules/password-protection';
 
-const isValid = await verifyPassword('my-password', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f');
+const isValid = await verifyPassword('my-password', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'my-unique-salt');
 console.log(isValid); // true or false
 ```
+
+**Error Handling:**
+- Returns `false` if any parameter is invalid (logs error to console)
+- Validates all input parameters before processing
+- Gracefully handles validation errors without throwing
+
+## Console Usage
+
+When using the password hash generator in the browser console:
+
+```javascript
+// Correct usage
+window.generatePasswordHash('my-password', 'my-salt')
+
+// This will throw an error with helpful message
+window.generatePasswordHash('my-password') // Error: Both password and salt are required
+```
+
+The console function provides clear usage instructions when called incorrectly.
 
 ## Usage Examples
 
@@ -167,6 +205,7 @@ function SecretPage() {
   return (
     <PasswordProtect 
       verifyHash="your-hash-here"
+      salt="secret-page-salt"
       localStorageKey="secret-page-password"
     >
       <div className="p-6">
@@ -195,6 +234,7 @@ function MixedContentPage() {
       {/* Protected content */}
       <PasswordProtect 
         verifyHash="your-hash-here"
+        salt="members-section-salt"
         localStorageKey="members-section-password"
       >
         <section className="mt-8">
@@ -217,6 +257,7 @@ function MultiProtectedPage() {
     <div className="space-y-8">
       <PasswordProtect 
         verifyHash="hash-for-section-1"
+        salt="admin-panel-salt"
         localStorageKey="admin-panel-password"
         title="Admin Panel"
         description="Admin access required"
@@ -226,6 +267,7 @@ function MultiProtectedPage() {
 
       <PasswordProtect 
         verifyHash="hash-for-section-2"
+        salt="financial-data-salt"
         localStorageKey="financial-data-password"
         title="Financial Data"
         description="Finance team access required"
@@ -235,6 +277,39 @@ function MultiProtectedPage() {
     </div>
   );
 }
+```
+
+## Salt Best Practices
+
+### 1. **Use Unique Salts**
+Each protected component should use a unique salt to maximize security:
+
+```tsx
+// Good: Different salts for different content
+<PasswordProtect salt="admin-dashboard-2024" ... />
+<PasswordProtect salt="financial-reports-v2" ... />
+
+// Avoid: Reusing the same salt
+<PasswordProtect salt="my-salt" ... />
+<PasswordProtect salt="my-salt" ... />
+```
+
+### 2. **Salt Recommendations**
+- Use descriptive, unique strings
+- Include version numbers or dates if content changes
+- Keep salts consistent for the same content across deployments
+- Store salts securely (they can be in your source code as they're not secret)
+
+### 3. **Example Salt Patterns**
+```tsx
+// By content type and version
+salt="admin-panel-v1"
+salt="user-data-2024"
+salt="financial-reports-q1-2024"
+
+// By feature and environment
+salt="beta-features-staging"
+salt="premium-content-prod"
 ```
 
 ## Security Considerations

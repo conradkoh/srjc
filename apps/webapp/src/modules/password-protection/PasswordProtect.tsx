@@ -157,8 +157,6 @@ export function PasswordProtect({
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={handlePasswordChange}
                   placeholder="Enter password"

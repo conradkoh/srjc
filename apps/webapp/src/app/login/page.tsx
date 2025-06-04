@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { featureFlags } from '@/lib/featureFlags';
 import { AnonymousLoginButton } from '@/modules/auth/AnonymousLoginButton';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import { KeyRound, KeySquare, Loader2 } from 'lucide-react';
@@ -23,6 +24,9 @@ export default function LoginPage() {
   // Redirect authenticated users to app
   useEffect(() => {
     if (authState?.state === 'authenticated') {
+      router.push('/app');
+    }
+    if (featureFlags.disableLogin) {
       router.push('/app');
     }
   }, [authState, router]);

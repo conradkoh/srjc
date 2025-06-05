@@ -2,6 +2,7 @@
 
 import { UserMenu } from '@/components/UserMenu';
 import { Button } from '@/components/ui/button';
+import { featureFlags } from '@/lib/featureFlags';
 import { cn } from '@/lib/utils';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import Link from 'next/link';
@@ -31,11 +32,13 @@ export function Navigation() {
               (isAuthenticated ? (
                 <UserMenu />
               ) : (
-                <Link href="/login">
-                  <Button size="sm" variant="outline">
-                    Login
-                  </Button>
-                </Link>
+                !featureFlags.disableLogin && (
+                  <Link href="/login">
+                    <Button size="sm" variant="outline">
+                      Login
+                    </Button>
+                  </Link>
+                )
               ))}
           </div>
         </nav>

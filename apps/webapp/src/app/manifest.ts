@@ -1,4 +1,4 @@
-import { featureFlags } from '@/lib/featureFlags';
+import { featureFlags } from '@workspace/backend/config/featureFlags';
 import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {

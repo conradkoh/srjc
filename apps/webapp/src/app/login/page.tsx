@@ -2,9 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { featureFlags } from '@/lib/featureFlags';
 import { AnonymousLoginButton } from '@/modules/auth/AnonymousLoginButton';
 import { useAuthState } from '@/modules/auth/AuthProvider';
+import { featureFlags } from '@workspace/backend/config/featureFlags';
 import { AlertCircle, KeyRound, KeySquare, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

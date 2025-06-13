@@ -18,8 +18,8 @@ This project uses the following libraries
     - ShadCN
 - Icons
     - @radix-ui/react-icons
-    - lucide-react 
-
+    - lucide-react
+    - react-icons
 
 ### Shadcn
 - When adding a new component, use the command format `npx shadcn@latest add <component-name>`

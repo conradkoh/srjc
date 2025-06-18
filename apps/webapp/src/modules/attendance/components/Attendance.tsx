@@ -15,7 +15,7 @@ import { useCurrentUser } from '@/modules/auth/AuthProvider';
 import { api } from '@workspace/backend/convex/_generated/api';
 import type { Doc } from '@workspace/backend/convex/_generated/dataModel';
 import { useSessionQuery } from 'convex-helpers/react/sessions';
-import { CheckCircle2, ChevronDown, LogIn, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronDown, UserPlus, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { AttendanceDialog } from './AttendanceDialog';
@@ -25,6 +25,7 @@ interface AttendanceModuleProps {
   attendanceKey: string;
   title: string;
   expectedNames?: string[];
+  remarksPlaceholder?: string;
 }
 
 // Internal component that uses useSearchParams
@@ -32,6 +33,7 @@ const AttendanceContent = ({
   attendanceKey,
   title = 'Attendance',
   expectedNames = [],
+  remarksPlaceholder,
 }: AttendanceModuleProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,8 +44,8 @@ const AttendanceContent = ({
   const [selectedPerson, setSelectedPerson] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFullListModal, setShowFullListModal] = useState(false);
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [modalSearchQuery, setModalSearchQuery] = useState('');
+  const [isManualJoin, setIsManualJoin] = useState(false);
   const attendanceData = useSessionQuery(api.attendance.getAttendanceData, {
     attendanceKey,
   });
@@ -102,13 +104,10 @@ const AttendanceContent = ({
   }
 
   const handleJoin = () => {
-    if (!isAuthenticated || !currentUser) {
-      setLoginDialogOpen(true);
-      return;
-    }
-
-    // Open the dialog with the current user's name pre-selected
-    setSelectedPerson(currentUser.name);
+    // If user is authenticated, pre-fill their name, otherwise open with empty name
+    const defaultName = isAuthenticated && currentUser ? currentUser.name : '';
+    setSelectedPerson(defaultName);
+    setIsManualJoin(true); // Always true when using the join button
     setDialogOpen(true);
   };
 
@@ -118,12 +117,17 @@ const AttendanceContent = ({
 
   const handlePersonClick = (name: string) => {
     setSelectedPerson(name);
+    // If the name is not in the expected list, consider it a manual join
+    // This handles cases where someone manually added themselves but we're now clicking on their name
+    const wasInExpectedList = expectedNames?.includes(name);
+    setIsManualJoin(!wasInExpectedList);
     setDialogOpen(true);
   };
 
   const handleDialogClose = () => {
     setDialogOpen(false);
     setSelectedPerson('');
+    setIsManualJoin(false);
   };
 
   // Handle successful attendance submission
@@ -250,7 +254,11 @@ const AttendanceContent = ({
 
               <TabsContent value="responded">
                 {respondedNames.length === 0 ? (
-                  <AttendanceEmptyState message="No results found" onJoin={handleJoin} />
+                  <AttendanceEmptyState
+                    message="No results found"
+                    onJoin={handleJoin}
+                    showJoinButton={!searchQuery.trim()}
+                  />
                 ) : (
                   <div className="space-y-2">
                     {respondedNames.slice(0, 7).map((name) => {
@@ -316,7 +324,11 @@ const AttendanceContent = ({
 
               <TabsContent value="pending">
                 {pendingNames.length === 0 ? (
-                  <AttendanceEmptyState message="No results found" onJoin={handleJoin} />
+                  <AttendanceEmptyState
+                    message="No results found"
+                    onJoin={handleJoin}
+                    showJoinButton={!searchQuery.trim()}
+                  />
                 ) : (
                   <div className="space-y-2">
                     {pendingNames.slice(0, 7).map((name) => {
@@ -360,27 +372,24 @@ const AttendanceContent = ({
                 )}
               </TabsContent>
             </Tabs>
+
+            {/* Join button below component */}
+            {(!isAuthenticated || !isCurrentUserRegistered) && (
+              <div className="mt-6 text-center">
+                <p className="text-muted-foreground mb-2">Don't see your name?</p>
+                <Button
+                  onClick={handleJoin}
+                  className="flex items-center justify-center mx-auto w-fit"
+                  variant="outline"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Join the list
+                </Button>
+              </div>
+            )}
           </>
         )}
       </div>
-
-      {/* Login dialog */}
-      <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Login Required</DialogTitle>
-            <DialogDescription>You need to be logged in to mark your attendance.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setLoginDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => router.push('/login')} className="flex items-center">
-              <LogIn className="h-4 w-4 mr-2" /> Go to Login
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Full list modal - update to show based on active tab */}
       <Dialog open={showFullListModal} onOpenChange={setShowFullListModal}>
@@ -418,12 +427,16 @@ const AttendanceContent = ({
                           type="button"
                           onClick={() => {
                             setSelectedPerson(name);
+                            const wasInExpectedList = expectedNames?.includes(name);
+                            setIsManualJoin(!wasInExpectedList);
                             setDialogOpen(true);
                             setShowFullListModal(false);
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               setSelectedPerson(name);
+                              const wasInExpectedList = expectedNames?.includes(name);
+                              setIsManualJoin(!wasInExpectedList);
                               setDialogOpen(true);
                               setShowFullListModal(false);
                             }
@@ -465,6 +478,7 @@ const AttendanceContent = ({
                     setShowFullListModal(false);
                     handleJoin();
                   }}
+                  showJoinButton={!modalSearchQuery.trim()}
                 />
               )}
             </ScrollArea>
@@ -480,6 +494,8 @@ const AttendanceContent = ({
           attendanceKey={attendanceKey}
           attendanceRecords={attendanceRecords}
           onSuccess={handleAttendanceSuccess}
+          isManuallyJoined={isManualJoin}
+          remarksPlaceholder={remarksPlaceholder}
         />
       )}
     </>

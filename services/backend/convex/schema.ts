@@ -53,6 +53,7 @@ export default defineSchema({
     status: v.optional(v.union(v.literal('attending'), v.literal('not_attending'))), // Attendance status
     reason: v.optional(v.string()), // Optional reason for not attending
     remarks: v.optional(v.string()), // Optional remarks for attending
+    isManuallyJoined: v.optional(v.boolean()), // Whether this person manually joined the list (vs being in expected list)
   })
     .index('by_attendance', ['attendanceKey'])
     .index('by_name_attendance', ['attendanceKey', 'name'])

@@ -15,7 +15,7 @@ import { useCurrentUser } from '@/modules/auth/AuthProvider';
 import { api } from '@workspace/backend/convex/_generated/api';
 import type { Doc } from '@workspace/backend/convex/_generated/dataModel';
 import { useSessionQuery } from 'convex-helpers/react/sessions';
-import { CheckCircle2, ChevronDown, UserPlus, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronDown, UserPlus, X, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { AttendanceDialog } from './AttendanceDialog';
@@ -46,6 +46,7 @@ const AttendanceContent = ({
   const [showFullListModal, setShowFullListModal] = useState(false);
   const [modalSearchQuery, setModalSearchQuery] = useState('');
   const [isManualJoin, setIsManualJoin] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'attending' | 'not_attending'>('all');
   const attendanceData = useSessionQuery(api.attendance.getAttendanceData, {
     attendanceKey,
   });
@@ -68,6 +69,8 @@ const AttendanceContent = ({
   const handleTabChange = useCallback(
     (tab: 'pending' | 'responded') => {
       setActiveTab(tab);
+      // Reset status filter when switching tabs
+      setStatusFilter('all');
       const params = new URLSearchParams(searchParams.toString());
       params.set('attendanceTab', tab);
       // Keep the main tab parameter if it exists
@@ -175,14 +178,26 @@ const AttendanceContent = ({
     return record?.status;
   });
 
+  // Apply status filter to responded names
+  const filteredRespondedNames = respondedNames.filter((name) => {
+    if (statusFilter === 'all') return true;
+    const record = attendanceMap.get(name);
+    return record?.status === statusFilter;
+  });
+
   // Get the names to display based on active tab
-  const displayNames = activeTab === 'pending' ? pendingNames : respondedNames;
+  const displayNames = activeTab === 'pending' ? pendingNames : filteredRespondedNames;
 
   // For the modal, we want to keep a separate list filtered by modalSearchQuery
   const modalFilteredNames = Array.from(allNames).filter((name) => {
     // If we're in the modal, use the activeTab to determine which list to show
     const record = attendanceMap.get(name);
     const isInActiveTabList = activeTab === 'pending' ? !record?.status : record?.status;
+
+    // Apply status filter for responded tab in modal
+    if (activeTab === 'responded' && statusFilter !== 'all') {
+      if (record?.status !== statusFilter) return false;
+    }
 
     // Then filter by the modal search query
     return isInActiveTabList && name.toLowerCase().includes(modalSearchQuery.toLowerCase());
@@ -191,6 +206,16 @@ const AttendanceContent = ({
   const attendingCount = attendanceRecords.filter((r) => r.status === 'attending').length;
   const notAttendingCount = attendanceRecords.filter((r) => r.status === 'not_attending').length;
   const pendingCount = pendingNames.length;
+
+  // Filter counts for responded names (after search but before status filter)
+  const respondedAttendingCount = respondedNames.filter((name) => {
+    const record = attendanceMap.get(name);
+    return record?.status === 'attending';
+  }).length;
+  const respondedNotAttendingCount = respondedNames.filter((name) => {
+    const record = attendanceMap.get(name);
+    return record?.status === 'not_attending';
+  }).length;
 
   // Reset modal search when opening the modal
   useEffect(() => {
@@ -253,7 +278,45 @@ const AttendanceContent = ({
               </TabsList>
 
               <TabsContent value="responded">
-                {respondedNames.length === 0 ? (
+                {/* Status Filter Buttons */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Button
+                    variant={statusFilter === 'attending' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStatusFilter('attending')}
+                    className="flex items-center gap-1"
+                  >
+                    <CheckCircle2 className="h-3 w-3 text-green-500" />
+                    Attending
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {respondedAttendingCount}
+                    </Badge>
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'not_attending' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStatusFilter('not_attending')}
+                    className="flex items-center gap-1"
+                  >
+                    <XCircle className="h-3 w-3 text-red-500" />
+                    Not Attending
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {respondedNotAttendingCount}
+                    </Badge>
+                  </Button>
+                  {statusFilter !== 'all' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setStatusFilter('all')}
+                      className="flex items-center gap-1 px-2"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+
+                {filteredRespondedNames.length === 0 ? (
                   <AttendanceEmptyState
                     message="No results found"
                     onJoin={handleJoin}
@@ -261,7 +324,7 @@ const AttendanceContent = ({
                   />
                 ) : (
                   <div className="space-y-2">
-                    {respondedNames.slice(0, 7).map((name) => {
+                    {filteredRespondedNames.slice(0, 7).map((name) => {
                       const record = attendanceMap.get(name);
                       const status = record?.status;
                       const reason = record?.reason;
@@ -308,13 +371,13 @@ const AttendanceContent = ({
                         </div>
                       );
                     })}
-                    {respondedNames.length > 7 && (
+                    {filteredRespondedNames.length > 7 && (
                       <Button
                         variant="ghost"
                         className="w-full mt-3 text-muted-foreground hover:text-foreground h-9 rounded-md transition-colors flex items-center justify-center"
                         onClick={() => setShowFullListModal(true)}
                       >
-                        View {respondedNames.length} more responses
+                        View {filteredRespondedNames.length - 7} more responses
                         <ChevronDown className="ml-2 h-4 w-4" />
                       </Button>
                     )}
@@ -396,8 +459,14 @@ const AttendanceContent = ({
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {activeTab === 'pending' ? 'Pending Responses' : 'All Responses'} (
-              {displayNames.length})
+              {activeTab === 'pending'
+                ? 'Pending Responses'
+                : statusFilter === 'all'
+                  ? 'All Responses'
+                  : statusFilter === 'attending'
+                    ? 'Attending Responses'
+                    : 'Not Attending Responses'}{' '}
+              ({displayNames.length})
             </DialogTitle>
           </DialogHeader>
           <div className="mb-4">

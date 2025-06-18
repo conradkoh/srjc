@@ -351,10 +351,10 @@ const AttendanceContent = ({
                               ) : (
                                 <div className="h-4 w-4 rounded-full border mr-2 flex-shrink-0" />
                               )}
-                              <span className="ml-2">
+                              <span className="ml-2 text-sm">
                                 {name}
                                 {isYou && (
-                                  <span className="ml-1 text-sm text-muted-foreground">(you)</span>
+                                  <span className="ml-1 text-xs text-muted-foreground">(you)</span>
                                 )}
                               </span>
                             </div>
@@ -410,10 +410,10 @@ const AttendanceContent = ({
                           >
                             <div className="flex items-center">
                               <div className="h-4 w-4 rounded-full border mr-2 flex-shrink-0" />
-                              <span className="ml-2">
+                              <span className="ml-2 text-sm">
                                 {name}
                                 {isYou && (
-                                  <span className="ml-1 text-sm text-muted-foreground">(you)</span>
+                                  <span className="ml-1 text-xs text-muted-foreground">(you)</span>
                                 )}
                               </span>
                             </div>
@@ -519,10 +519,10 @@ const AttendanceContent = ({
                             ) : (
                               <div className="h-4 w-4 rounded-full border mr-2 flex-shrink-0" />
                             )}
-                            <span className="ml-2">
+                            <span className="ml-2 text-sm">
                               {name}
                               {isYou && (
-                                <span className="ml-1 text-sm text-muted-foreground">(you)</span>
+                                <span className="ml-1 text-xs text-muted-foreground">(you)</span>
                               )}
                             </span>
                           </div>

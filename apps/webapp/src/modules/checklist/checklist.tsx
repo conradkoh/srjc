@@ -319,16 +319,18 @@ function _ChecklistItemComponent({
         <span className={textClassName}>{item.text}</span>
         {isPending && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
       </div>
-      {isActive && !isOptimistic && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleDelete}
-          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      )}
+      <div className="w-8 h-8 flex items-center justify-center">
+        {isActive && !isOptimistic && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDelete}
+            className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

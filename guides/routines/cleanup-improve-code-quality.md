@@ -215,6 +215,78 @@ function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
 }
 ```
 
+#### For Convex Functions
+
+In Convex backend functions, always properly type the `ctx` parameter instead of using `any`. Import the appropriate context types from the generated server file.
+
+```typescript
+// ❌ Bad - Using any for Convex context
+import { api } from './_generated/api';
+
+export const getUser = async (ctx: any, args: { userId: string }) => {
+  const user = await ctx.db.get(args.userId);
+  return user;
+};
+
+export const createUser = async (ctx: any, args: { name: string; email: string }) => {
+  const userId = await ctx.db.insert('users', args);
+  return userId;
+};
+
+// ✅ Good - Using proper Convex context types
+import { type MutationCtx, type QueryCtx } from './_generated/server';
+import { api } from './_generated/api';
+
+export const getUser = async (ctx: QueryCtx, args: { userId: string }) => {
+  const user = await ctx.db.get(args.userId);
+  return user;
+};
+
+export const createUser = async (ctx: MutationCtx, args: { name: string; email: string }) => {
+  const userId = await ctx.db.insert('users', args);
+  return userId;
+};
+```
+
+#### For Shared Helper Functions in Convex
+
+When creating helper functions that can work with both query and mutation contexts, use union types:
+
+```typescript
+import { type MutationCtx, type QueryCtx } from './_generated/server';
+
+/**
+ * Validates user permissions for accessing a resource.
+ * Can be used in both queries and mutations.
+ */
+function _validateUserAccess(ctx: MutationCtx | QueryCtx, userId: string): Promise<boolean> {
+  // Implementation that works with both context types
+  return ctx.db.get(userId).then(user => user?.isActive || false);
+}
+
+/**
+ * Gets user by ID with proper authorization checks.
+ */
+export const getUser = async (ctx: QueryCtx, args: { userId: string }) => {
+  const hasAccess = await _validateUserAccess(ctx, args.userId);
+  if (!hasAccess) {
+    throw new Error('Unauthorized');
+  }
+  return await ctx.db.get(args.userId);
+};
+
+/**
+ * Updates user information with authorization checks.
+ */
+export const updateUser = async (ctx: MutationCtx, args: { userId: string; name: string }) => {
+  const hasAccess = await _validateUserAccess(ctx, args.userId);
+  if (!hasAccess) {
+    throw new Error('Unauthorized');
+  }
+  return await ctx.db.patch(args.userId, { name: args.name });
+};
+```
+
 ### 5. High-Level Interfaces at the Top
 
 The most important interfaces that define the module's public API should be placed immediately after imports and before any implementation.
@@ -506,6 +578,8 @@ Before considering a file "cleaned up", verify:
 - [ ] Event handlers use specific React event types
 - [ ] API responses use proper interfaces with type guards for unknown data
 - [ ] All function parameters and return types are explicitly typed
+- [ ] Convex functions use proper context types (`QueryCtx`, `MutationCtx`, or their union)
+- [ ] Convex context types are imported from `./_generated/server`
 
 ### React Performance (if applicable)
 - [ ] `useCallback` used for functions passed as props to child components

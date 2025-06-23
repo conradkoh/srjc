@@ -1,7 +1,7 @@
 import { api } from '@workspace/backend/convex/_generated/api';
 import type { Id } from '@workspace/backend/convex/_generated/dataModel';
 import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type {
   ChecklistItem,
@@ -10,11 +10,39 @@ import type {
   OptimisticChecklistItem,
 } from './types';
 
-interface UseChecklistSyncProps {
+/**
+ * Props for the useChecklistSync hook.
+ */
+export interface UseChecklistSyncProps {
   key: string;
   title: string;
 }
 
+/**
+ * Internal type for checklist statistics.
+ */
+interface _ChecklistStats {
+  totalItems: number;
+  completedItems: number;
+  pendingItems: number;
+  completionPercentage: number;
+}
+
+/**
+ * Custom hook for managing checklist state with optimistic updates and real-time synchronization.
+ * Provides comprehensive checklist operations including CRUD operations, state management,
+ * and automatic conflict resolution between local optimistic updates and server state.
+ *
+ * Features:
+ * - Optimistic updates for immediate UI feedback
+ * - Automatic retry mechanism for failed operations
+ * - Real-time synchronization with server state
+ * - Comprehensive error handling with user notifications
+ *
+ * @param key - Unique identifier for the checklist
+ * @param title - Display title for the checklist
+ * @returns Object containing checklist data, state, statistics, and action functions
+ */
 export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [optimisticItems, setOptimisticItems] = useState<OptimisticChecklistItem[]>([]);
@@ -47,17 +75,37 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
   const exists = checklistState?.exists ?? false;
 
   // Merge server items with optimistic items, filter out deleted items, and apply optimistic toggles
-  const items: ChecklistItemWithOptimistic[] = [
-    ...(serverItems ?? [])
-      .filter((item) => !deletingItemIds.has(item._id))
-      .map((item) => {
-        const optimisticCompleted = optimisticToggles.get(item._id);
-        return optimisticCompleted !== undefined
-          ? { ...item, isCompleted: optimisticCompleted }
-          : item;
-      }),
-    ...optimisticItems,
-  ].sort((a, b) => a.order - b.order);
+  const items: ChecklistItemWithOptimistic[] = useMemo(() => {
+    return [
+      ...(serverItems ?? [])
+        .filter((item) => !deletingItemIds.has(item._id))
+        .map((item) => {
+          const optimisticCompleted = optimisticToggles.get(item._id);
+          return optimisticCompleted !== undefined
+            ? { ...item, isCompleted: optimisticCompleted }
+            : item;
+        }),
+      ...optimisticItems,
+    ].sort((a, b) => a.order - b.order);
+  }, [serverItems, deletingItemIds, optimisticToggles, optimisticItems]);
+
+  // Computed statistics (use the items array which already includes optimistic changes)
+  const statistics: _ChecklistStats = useMemo(() => {
+    const totalItems = items.length;
+    const completedItems = items.filter(
+      (item) => item.isCompleted && !('isPending' in item && item.isPending)
+    ).length;
+    const pendingItems = totalItems - completedItems;
+    const completionPercentage =
+      totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+    return {
+      totalItems,
+      completedItems,
+      pendingItems,
+      completionPercentage,
+    };
+  }, [items]);
 
   // Set loading state based on data availability
   useEffect(() => {
@@ -103,7 +151,10 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     }
   }, [serverItems, optimisticToggles.size]);
 
-  // Initialize checklist
+  /**
+   * Initializes a new checklist if one doesn't exist for the given key.
+   * @returns Promise that resolves when initialization is complete
+   */
   const initializeChecklist = useCallback(async () => {
     if (!exists && checklistState !== undefined) {
       try {
@@ -115,7 +166,12 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     }
   }, [exists, checklistState, createChecklistMutation, key, title]);
 
-  // Add a new item with optimistic updates
+  /**
+   * Adds a new item to the checklist with optimistic updates.
+   * Provides immediate UI feedback and handles failures gracefully.
+   * @param text - The text content for the new checklist item
+   * @returns Promise resolving to true if successful, false otherwise
+   */
   const addItem = useCallback(
     async (text: string): Promise<boolean> => {
       if (!text.trim()) {
@@ -172,14 +228,23 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     [addItemMutation, key, items]
   );
 
-  // Get and clear the last failed text (for input recovery)
+  /**
+   * Retrieves and clears the last failed text for input recovery.
+   * Used to restore user input after a failed operation.
+   * @returns The last failed text or null if none exists
+   */
   const getAndClearFailedText = useCallback(() => {
     const text = lastFailedText;
     setLastFailedText(null);
     return text;
   }, [lastFailedText]);
 
-  // Toggle item completion with optimistic updates
+  /**
+   * Toggles the completion status of a checklist item with optimistic updates.
+   * Provides immediate visual feedback and handles server sync.
+   * @param itemId - The ID of the checklist item to toggle
+   * @returns Promise resolving to true if successful, false otherwise
+   */
   const toggleItem = useCallback(
     async (itemId: Id<'checklistItems'>): Promise<boolean> => {
       // Find the current item to get its current state
@@ -217,7 +282,12 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     [toggleItemMutation, serverItems]
   );
 
-  // Delete an item with optimistic updates
+  /**
+   * Deletes a checklist item with optimistic updates.
+   * Immediately hides the item from UI while processing server request.
+   * @param itemId - The ID of the checklist item to delete
+   * @returns Promise resolving to true if successful, false otherwise
+   */
   const deleteItem = useCallback(
     async (itemId: Id<'checklistItems'>): Promise<boolean> => {
       // Add to deleting set immediately for optimistic UI
@@ -243,7 +313,11 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     [deleteItemMutation]
   );
 
-  // Conclude the checklist
+  /**
+   * Concludes the checklist, marking it as inactive.
+   * Prevents further modifications to the checklist.
+   * @returns Promise resolving to true if successful, false otherwise
+   */
   const concludeChecklist = useCallback(async (): Promise<boolean> => {
     try {
       await concludeChecklistMutation({ checklistKey: key });
@@ -256,7 +330,11 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     }
   }, [concludeChecklistMutation, key]);
 
-  // Reopen the checklist
+  /**
+   * Reopens a concluded checklist, making it active again.
+   * Allows further modifications to the checklist.
+   * @returns Promise resolving to true if successful, false otherwise
+   */
   const reopenChecklist = useCallback(async (): Promise<boolean> => {
     try {
       await reopenChecklistMutation({ checklistKey: key });
@@ -269,7 +347,11 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     }
   }, [reopenChecklistMutation, key]);
 
-  // Clear completed items with optimistic updates
+  /**
+   * Clears all completed items from the checklist with optimistic updates.
+   * Immediately hides completed items while processing server request.
+   * @returns Promise resolving to true if successful, false otherwise
+   */
   const clearCompleted = useCallback(async (): Promise<boolean> => {
     // Get completed items to delete optimistically
     const completedItemIds = (serverItems ?? [])
@@ -312,14 +394,6 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     }
   }, [clearCompletedMutation, key, serverItems, deletingItemIds]);
 
-  // Computed statistics (use the items array which already includes optimistic changes)
-  const totalItems = items.length;
-  const completedItems = items.filter(
-    (item) => item.isCompleted && !('isPending' in item && item.isPending)
-  ).length;
-  const pendingItems = totalItems - completedItems;
-  const completionPercentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-
   return {
     // Data
     checklistState,
@@ -332,10 +406,10 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     isLoading,
 
     // Statistics
-    totalItems,
-    completedItems,
-    pendingItems,
-    completionPercentage,
+    totalItems: statistics.totalItems,
+    completedItems: statistics.completedItems,
+    pendingItems: statistics.pendingItems,
+    completionPercentage: statistics.completionPercentage,
 
     // Actions
     initializeChecklist,

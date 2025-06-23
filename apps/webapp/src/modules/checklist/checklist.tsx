@@ -13,11 +13,34 @@ import {
 import { Progress } from '@/components/ui/progress';
 import type { Id } from '@workspace/backend/convex/_generated/dataModel';
 import { CheckCheck, Loader2, MoreVertical, RotateCcw, Trash2 } from 'lucide-react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { ChecklistInlineInput } from './checklist-inline-input';
 import type { ChecklistItemWithOptimistic, ChecklistProps } from './types';
 import { useChecklistSync } from './use-checklist-sync';
 
+/**
+ * Internal props for the ChecklistItemComponent.
+ */
+interface _ChecklistItemComponentProps {
+  item: ChecklistItemWithOptimistic;
+  onToggle: (itemId: string | Id<'checklistItems'>) => void;
+  onDelete: (itemId: string | Id<'checklistItems'>) => void;
+  isActive: boolean;
+}
+
+/**
+ * Main checklist component for displaying and managing collaborative task lists.
+ * Provides a complete interface for viewing, adding, completing, and managing checklist items
+ * with real-time synchronization and optimistic updates.
+ *
+ * Features:
+ * - Real-time collaborative editing
+ * - Optimistic updates for immediate feedback
+ * - Progress tracking with visual indicators
+ * - Checklist lifecycle management (active/concluded)
+ * - Bulk operations (clear completed items)
+ * - Responsive design with scrollable content
+ */
 export function Checklist({ title, checklistKey, description, className }: ChecklistProps) {
   const {
     items,
@@ -45,6 +68,10 @@ export function Checklist({ title, checklistKey, description, className }: Check
     initializeChecklist();
   }, [initializeChecklist]);
 
+  /**
+   * Handles adding a new item to the checklist.
+   * Wrapped in useCallback to prevent unnecessary re-renders.
+   */
   const handleAddItem = useCallback(
     async (text: string) => {
       return await addItem(text);
@@ -52,6 +79,10 @@ export function Checklist({ title, checklistKey, description, className }: Check
     [addItem]
   );
 
+  /**
+   * Handles toggling the completion status of a checklist item.
+   * Prevents toggling optimistic items that haven't been persisted yet.
+   */
   const handleToggleItem = useCallback(
     (itemId: string | Id<'checklistItems'>) => {
       // Only allow toggling real items, not optimistic ones
@@ -63,6 +94,10 @@ export function Checklist({ title, checklistKey, description, className }: Check
     [toggleItem]
   );
 
+  /**
+   * Handles deleting a checklist item.
+   * Prevents deleting optimistic items that haven't been persisted yet.
+   */
   const handleDeleteItem = useCallback(
     (itemId: string | Id<'checklistItems'>) => {
       // Only allow deleting real items, not optimistic ones
@@ -74,17 +109,86 @@ export function Checklist({ title, checklistKey, description, className }: Check
     [deleteItem]
   );
 
+  /**
+   * Handles concluding the entire checklist.
+   * Marks the checklist as inactive and prevents further modifications.
+   */
   const handleConcludeChecklist = useCallback(() => {
     concludeChecklist();
   }, [concludeChecklist]);
 
+  /**
+   * Handles reopening a concluded checklist.
+   * Makes the checklist active again for further modifications.
+   */
   const handleReopenChecklist = useCallback(() => {
     reopenChecklist();
   }, [reopenChecklist]);
 
+  /**
+   * Handles clearing all completed items from the checklist.
+   * Removes all checked items in a single operation.
+   */
   const handleClearCompleted = useCallback(() => {
     clearCompleted();
   }, [clearCompleted]);
+
+  /**
+   * Memoized progress section to avoid unnecessary re-renders.
+   * Only recalculates when progress-related values change.
+   */
+  const progressSection = useMemo(() => {
+    if (totalItems === 0) return null;
+
+    return (
+      <div className="space-y-2 mt-3">
+        <Progress value={completionPercentage} className="h-2" />
+        <div className="text-sm text-muted-foreground">
+          {completedItems} of {totalItems} completed ({Math.round(completionPercentage)}%)
+        </div>
+      </div>
+    );
+  }, [totalItems, completedItems, completionPercentage]);
+
+  /**
+   * Memoized dropdown menu content to avoid unnecessary re-renders.
+   * Only recalculates when state or completion status changes.
+   */
+  const dropdownMenuContent = useMemo(
+    () => (
+      <DropdownMenuContent align="end">
+        {isActive && (
+          <>
+            {completedItems > 0 && (
+              <DropdownMenuItem onClick={handleClearCompleted}>
+                <CheckCheck className="mr-2 h-4 w-4" />
+                Clear Completed
+              </DropdownMenuItem>
+            )}
+            {completedItems > 0 && <DropdownMenuSeparator />}
+            <DropdownMenuItem onClick={handleConcludeChecklist}>
+              <CheckCheck className="mr-2 h-4 w-4" />
+              Conclude Checklist
+            </DropdownMenuItem>
+          </>
+        )}
+        {isConcluded && (
+          <DropdownMenuItem onClick={handleReopenChecklist}>
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Reopen Checklist
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    ),
+    [
+      isActive,
+      isConcluded,
+      completedItems,
+      handleClearCompleted,
+      handleConcludeChecklist,
+      handleReopenChecklist,
+    ]
+  );
 
   if (isLoading) {
     return (
@@ -116,39 +220,10 @@ export function Checklist({ title, checklistKey, description, className }: Check
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {isActive && (
-                <>
-                  {completedItems > 0 && (
-                    <DropdownMenuItem onClick={handleClearCompleted}>
-                      <CheckCheck className="mr-2 h-4 w-4" />
-                      Clear Completed
-                    </DropdownMenuItem>
-                  )}
-                  {completedItems > 0 && <DropdownMenuSeparator />}
-                  <DropdownMenuItem onClick={handleConcludeChecklist}>
-                    <CheckCheck className="mr-2 h-4 w-4" />
-                    Conclude Checklist
-                  </DropdownMenuItem>
-                </>
-              )}
-              {isConcluded && (
-                <DropdownMenuItem onClick={handleReopenChecklist}>
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Reopen Checklist
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
+            {dropdownMenuContent}
           </DropdownMenu>
         </div>
-        {totalItems > 0 && (
-          <div className="space-y-2 mt-3">
-            <Progress value={completionPercentage} className="h-2" />
-            <div className="text-sm text-muted-foreground">
-              {completedItems} of {totalItems} completed ({Math.round(completionPercentage)}%)
-            </div>
-          </div>
-        )}
+        {progressSection}
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[250px] overflow-y-auto px-1 pb-1">
@@ -161,7 +236,7 @@ export function Checklist({ title, checklistKey, description, className }: Check
           ) : (
             <div className="space-y-2">
               {items.map((item) => (
-                <ChecklistItemComponent
+                <_ChecklistItemComponent
                   key={item._id}
                   item={item}
                   onToggle={handleToggleItem}
@@ -185,46 +260,70 @@ export function Checklist({ title, checklistKey, description, className }: Check
   );
 }
 
-function ChecklistItemComponent({
+/**
+ * Individual checklist item component with completion status and delete functionality.
+ * Handles both persisted and optimistic items with appropriate visual states.
+ * Internal component for checklist item rendering.
+ */
+function _ChecklistItemComponent({
   item,
   onToggle,
   onDelete,
   isActive,
-}: {
-  item: ChecklistItemWithOptimistic;
-  onToggle: (itemId: string | Id<'checklistItems'>) => void;
-  onDelete: (itemId: string | Id<'checklistItems'>) => void;
-  isActive: boolean;
-}) {
+}: _ChecklistItemComponentProps) {
   const isOptimistic = 'isOptimistic' in item && item.isOptimistic;
   const isPending = 'isPending' in item && item.isPending;
 
+  /**
+   * Memoized toggle handler to prevent unnecessary re-renders.
+   */
+  const handleToggle = useCallback(() => {
+    onToggle(item._id);
+  }, [onToggle, item._id]);
+
+  /**
+   * Memoized delete handler to prevent unnecessary re-renders.
+   */
+  const handleDelete = useCallback(() => {
+    onDelete(item._id);
+  }, [onDelete, item._id]);
+
+  /**
+   * Memoized item styling to avoid recalculating on every render.
+   */
+  const itemClassName = useMemo(() => {
+    const baseClasses =
+      'flex items-center gap-3 p-2 rounded-lg border bg-card transition-colors group';
+    const stateClasses = isPending ? 'bg-muted/50 opacity-75' : 'hover:bg-accent/50';
+    return `${baseClasses} ${stateClasses}`;
+  }, [isPending]);
+
+  /**
+   * Memoized text styling to avoid recalculating on every render.
+   */
+  const textClassName = useMemo(() => {
+    const baseClasses = 'text-sm';
+    const completedClasses = item.isCompleted ? 'line-through text-muted-foreground' : '';
+    const pendingClasses = isPending ? 'text-muted-foreground' : '';
+    return `${baseClasses} ${completedClasses} ${pendingClasses}`.trim();
+  }, [item.isCompleted, isPending]);
+
   return (
-    <div
-      className={`flex items-center gap-3 p-2 rounded-lg border bg-card transition-colors group ${
-        isPending ? 'bg-muted/50 opacity-75' : 'hover:bg-accent/50'
-      }`}
-    >
+    <div className={itemClassName}>
       <Checkbox
         checked={item.isCompleted}
-        onCheckedChange={() => onToggle(item._id)}
+        onCheckedChange={handleToggle}
         disabled={!isActive || isOptimistic}
       />
       <div className="flex-1 min-w-0 flex items-center gap-2">
-        <span
-          className={`text-sm ${item.isCompleted ? 'line-through text-muted-foreground' : ''} ${
-            isPending ? 'text-muted-foreground' : ''
-          }`}
-        >
-          {item.text}
-        </span>
+        <span className={textClassName}>{item.text}</span>
         {isPending && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
       </div>
       {isActive && !isOptimistic && (
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onDelete(item._id)}
+          onClick={handleDelete}
           className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
         >
           <Trash2 className="h-4 w-4" />

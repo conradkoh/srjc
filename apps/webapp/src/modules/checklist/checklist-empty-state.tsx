@@ -1,8 +1,19 @@
-interface ChecklistEmptyStateProps {
+/**
+ * Props for the ChecklistEmptyState component.
+ */
+export interface ChecklistEmptyStateProps {
   isActive: boolean;
   onAddItem: () => void;
 }
 
+/**
+ * Empty state component for checklists with no items.
+ * Displays contextual messages based on checklist status (active vs concluded).
+ * Provides visual feedback and guidance for users when the checklist is empty.
+ *
+ * @param isActive - Whether the checklist is currently active and accepts new items
+ * @param onAddItem - Callback function to trigger item addition (currently unused but kept for future extensibility)
+ */
 export function ChecklistEmptyState({ isActive }: ChecklistEmptyStateProps) {
   if (!isActive) {
     return (

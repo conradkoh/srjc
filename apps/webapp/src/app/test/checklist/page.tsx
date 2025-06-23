@@ -2,6 +2,17 @@
 
 import { Checklist } from '@/modules/checklist/checklist';
 
+/**
+ * Test page for demonstrating checklist functionality and layouts.
+ * Showcases various checklist configurations including single, side-by-side,
+ * and three-column layouts with different titles and descriptions.
+ *
+ * This page serves as:
+ * - Development testing environment for checklist features
+ * - Visual demonstration of responsive layouts
+ * - Example implementation reference for developers
+ * - UI/UX validation for different use cases
+ */
 export default function ChecklistTestPage() {
   return (
     <div className="container mx-auto py-8 px-4">

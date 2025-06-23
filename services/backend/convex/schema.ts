@@ -44,6 +44,29 @@ export default defineSchema({
     sessionId: v.optional(v.string()), // Session ID of the sender (optional)
   }).index('by_discussion', ['discussionKey']),
 
+  // Checklist-related tables
+  checklistState: defineTable({
+    key: v.string(), // Unique identifier for the checklist
+    title: v.string(), // Title of the checklist
+    isActive: v.boolean(), // Whether the checklist is active or concluded
+    createdAt: v.number(), // When the checklist was created
+    concludedAt: v.optional(v.number()), // When the checklist was concluded
+    concludedBy: v.optional(v.string()), // Session ID of who concluded the checklist
+  }).index('by_key', ['key']),
+
+  checklistItems: defineTable({
+    checklistKey: v.string(), // The checklist this item belongs to
+    text: v.string(), // The item text/description
+    isCompleted: v.boolean(), // Whether the item is completed
+    order: v.number(), // Display order
+    createdAt: v.number(), // When the item was created
+    completedAt: v.optional(v.number()), // When the item was completed
+    createdBy: v.optional(v.string()), // Session ID of who created the item
+    completedBy: v.optional(v.string()), // Session ID of who completed the item
+  })
+    .index('by_checklist', ['checklistKey'])
+    .index('by_checklist_order', ['checklistKey', 'order']),
+
   // Attendance-related tables
   attendanceRecords: defineTable({
     attendanceKey: v.string(), // The attendance session key (hardcoded)

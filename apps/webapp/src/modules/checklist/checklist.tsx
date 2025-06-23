@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
 import type { Id } from '@workspace/backend/convex/_generated/dataModel';
-import { CheckCheck, Loader2, MoreVertical, RotateCcw, Trash2 } from 'lucide-react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { CheckCheck, GripVertical, Loader2, MoreVertical, RotateCcw, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChecklistInlineInput } from './checklist-inline-input';
 import type { ChecklistItemWithOptimistic, ChecklistProps } from './types';
 import { useChecklistSync } from './use-checklist-sync';
@@ -26,6 +26,11 @@ interface _ChecklistItemComponentProps {
   onToggle: (itemId: string | Id<'checklistItems'>) => void;
   onDelete: (itemId: string | Id<'checklistItems'>) => void;
   isActive: boolean;
+  isDragging: boolean;
+  isDraggedOver: boolean;
+  onDragStart: (e: React.DragEvent, itemId: string | Id<'checklistItems'>) => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
 }
 
 /**
@@ -58,10 +63,64 @@ export function Checklist({ title, checklistKey, description, className }: Check
     concludeChecklist,
     reopenChecklist,
     clearCompleted,
+    reorderItems,
   } = useChecklistSync({
     key: checklistKey,
     title,
   });
+
+  // Drag and drop state
+  const [draggedItemId, setDraggedItemId] = useState<string | Id<'checklistItems'> | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  /**
+   * Handles the start of a drag operation.
+   * Records which item is being dragged.
+   */
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, itemId: string | Id<'checklistItems'>) => {
+      setDraggedItemId(itemId);
+      e.dataTransfer.effectAllowed = 'move';
+    },
+    []
+  );
+
+  /**
+   * Handles drag over events for drop zone indication.
+   * Determines the target drop index based on mouse position.
+   */
+  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  }, []);
+
+  /**
+   * Handles the drop operation to reorder items.
+   * Calls the reorder function with the new index.
+   */
+  const handleDrop = useCallback(
+    async (e: React.DragEvent, targetIndex: number) => {
+      e.preventDefault();
+
+      if (draggedItemId && typeof draggedItemId !== 'string') {
+        await reorderItems(draggedItemId, targetIndex);
+      }
+
+      // Reset drag state
+      setDraggedItemId(null);
+      setDragOverIndex(null);
+    },
+    [draggedItemId, reorderItems]
+  );
+
+  /**
+   * Cleans up drag state when drag operation ends.
+   */
+  const handleDragEnd = useCallback(() => {
+    setDraggedItemId(null);
+    setDragOverIndex(null);
+  }, []);
 
   // Initialize checklist on mount
   useEffect(() => {
@@ -235,13 +294,18 @@ export function Checklist({ title, checklistKey, description, className }: Check
             </div>
           ) : (
             <div className="space-y-2">
-              {items.map((item) => (
+              {items.map((item, index) => (
                 <_ChecklistItemComponent
                   key={item._id}
                   item={item}
                   onToggle={handleToggleItem}
                   onDelete={handleDeleteItem}
                   isActive={isActive}
+                  isDragging={draggedItemId === item._id}
+                  isDraggedOver={dragOverIndex === index}
+                  onDragStart={handleDragStart}
+                  onDragOver={(e: React.DragEvent) => handleDragOver(e, index)}
+                  onDrop={(e: React.DragEvent) => handleDrop(e, index)}
                 />
               ))}
               {isActive && (
@@ -270,9 +334,15 @@ function _ChecklistItemComponent({
   onToggle,
   onDelete,
   isActive,
+  isDragging,
+  isDraggedOver,
+  onDragStart,
+  onDragOver,
+  onDrop,
 }: _ChecklistItemComponentProps) {
   const isOptimistic = 'isOptimistic' in item && item.isOptimistic;
   const isPending = 'isPending' in item && item.isPending;
+  const canDrag = isActive && !isOptimistic && !isPending;
 
   /**
    * Memoized toggle handler to prevent unnecessary re-renders.
@@ -289,14 +359,29 @@ function _ChecklistItemComponent({
   }, [onDelete, item._id]);
 
   /**
+   * Memoized drag start handler to prevent unnecessary re-renders.
+   */
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      onDragStart(e, item._id);
+    },
+    [onDragStart, item._id]
+  );
+
+  /**
    * Memoized item styling to avoid recalculating on every render.
    */
   const itemClassName = useMemo(() => {
     const baseClasses =
       'flex items-center gap-3 p-2 rounded-lg border bg-card transition-colors group';
     const stateClasses = isPending ? 'bg-muted/50 opacity-75' : 'hover:bg-accent/50';
-    return `${baseClasses} ${stateClasses}`;
-  }, [isPending]);
+    const dragClasses = isDragging
+      ? 'opacity-50 scale-95'
+      : isDraggedOver
+        ? 'border-primary bg-primary/5'
+        : '';
+    return `${baseClasses} ${stateClasses} ${dragClasses}`.trim();
+  }, [isPending, isDragging, isDraggedOver]);
 
   /**
    * Memoized text styling to avoid recalculating on every render.
@@ -309,7 +394,19 @@ function _ChecklistItemComponent({
   }, [item.isCompleted, isPending]);
 
   return (
-    <div className={itemClassName}>
+    <div
+      className={itemClassName}
+      draggable={canDrag}
+      onDragStart={handleDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      onDragEnd={() => {}} // Prevent default behavior
+    >
+      {canDrag && (
+        <div className="cursor-grab active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+      )}
       <Checkbox
         checked={item.isCompleted}
         onCheckedChange={handleToggle}

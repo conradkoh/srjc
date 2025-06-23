@@ -68,6 +68,7 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
   const concludeChecklistMutation = useSessionMutation(api.checklists.concludeChecklist);
   const reopenChecklistMutation = useSessionMutation(api.checklists.reopenChecklist);
   const clearCompletedMutation = useSessionMutation(api.checklists.clearCompletedItems);
+  const reorderItemsMutation = useSessionMutation(api.checklists.reorderChecklistItems);
 
   // Derived state
   const isActive = checklistState?.isActive ?? false;
@@ -394,6 +395,59 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     }
   }, [clearCompletedMutation, key, serverItems, deletingItemIds]);
 
+  /**
+   * Reorders checklist items by updating their order values.
+   * Provides optimistic updates with immediate visual feedback.
+   * @param draggedItemId - The ID of the item being dragged
+   * @param targetIndex - The new index position for the dragged item
+   * @returns Promise resolving to true if successful, false otherwise
+   */
+  const reorderItems = useCallback(
+    async (draggedItemId: Id<'checklistItems'>, targetIndex: number): Promise<boolean> => {
+      if (!isActive) {
+        toast.error('Cannot reorder items in concluded checklist');
+        return false;
+      }
+
+      // Find the dragged item
+      const draggedItem = items.find((item) => item._id === draggedItemId);
+      if (!draggedItem || 'isOptimistic' in draggedItem) {
+        return false; // Don't reorder optimistic items
+      }
+
+      // Create new order for all items
+      const reorderedItems = [...items.filter((item) => !('isOptimistic' in item))];
+      const draggedIndex = reorderedItems.findIndex((item) => item._id === draggedItemId);
+
+      if (draggedIndex === -1 || draggedIndex === targetIndex) {
+        return true; // No change needed
+      }
+
+      // Remove dragged item and insert at target position
+      const [draggedItemRef] = reorderedItems.splice(draggedIndex, 1);
+      reorderedItems.splice(targetIndex, 0, draggedItemRef);
+
+      // Calculate new order values for affected items
+      const itemOrders = reorderedItems.map((item, index) => ({
+        itemId: item._id as Id<'checklistItems'>,
+        newOrder: index,
+      }));
+
+      try {
+        await reorderItemsMutation({
+          checklistKey: key,
+          itemOrders,
+        });
+        return true;
+      } catch (error) {
+        console.error('Failed to reorder items:', error);
+        toast.error('Failed to reorder items. Please try again.');
+        return false;
+      }
+    },
+    [reorderItemsMutation, key, items, isActive]
+  );
+
   return {
     // Data
     checklistState,
@@ -420,5 +474,6 @@ export function useChecklistSync({ key, title }: UseChecklistSyncProps) {
     concludeChecklist,
     reopenChecklist,
     clearCompleted,
+    reorderItems,
   };
 }

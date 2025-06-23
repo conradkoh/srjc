@@ -103,8 +103,11 @@ export function Checklist({ title, checklistKey, description, className }: Check
     async (e: React.DragEvent, targetIndex: number) => {
       e.preventDefault();
 
-      if (draggedItemId && typeof draggedItemId !== 'string') {
-        await reorderItems(draggedItemId, targetIndex);
+      if (
+        draggedItemId &&
+        !(typeof draggedItemId === 'string' && draggedItemId.startsWith('optimistic-'))
+      ) {
+        await reorderItems(draggedItemId as Id<'checklistItems'>, targetIndex);
       }
 
       // Reset drag state

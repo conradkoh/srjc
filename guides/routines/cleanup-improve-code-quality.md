@@ -13,6 +13,17 @@ This document provides a systematic approach to improving code quality through p
 
 ## Cleanup Steps
 
+### 0. Identify Files for Cleanup (Git Scope)
+
+Before starting cleanup, identify which files need attention using git status:
+
+```bash
+# Show modified TypeScript/JavaScript files only
+git status --porcelain | grep -E '\.(ts|tsx|js|jsx)$' | awk '{print $2}'
+```
+
+Focus on these files and skip generated files (e.g., `_generated/`), config files, and third-party code.
+
 ### 1. Add Comments to All Functions
 
 Every function must have a comment explaining its purpose, parameters, and return value.
@@ -562,6 +573,12 @@ export function UserCard({ user }: UserCardProps) {
 ## Quality Checklist
 
 Before considering a file "cleaned up", verify:
+
+### Scope and Planning
+- [ ] Used git to identify files that need cleanup (`git status --porcelain`)
+- [ ] Prioritized staged files first, then modified files
+- [ ] Filtered for relevant TypeScript/JavaScript files only
+- [ ] Skipped generated, config, and third-party files
 
 ### General Code Quality
 - [ ] All functions have descriptive comments

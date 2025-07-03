@@ -6,7 +6,7 @@ import { query } from './_generated/server';
  */
 export const get = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx, _args) => {
     const appInfo = await ctx.db.query('appInfo').first();
 
     // Get Google Auth configuration from database

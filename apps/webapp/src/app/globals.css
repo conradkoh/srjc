@@ -120,11 +120,7 @@ body {
 }
 
 /* Only apply transitions to direct children of body to reduce performance impact */
-body > * {
-  transition:
-    background-color var(--theme-transition-duration) var(--theme-transition-ease),
-    color var(--theme-transition-duration) var(--theme-transition-ease);
-}
+/* Moved to @layer base to avoid specificity conflicts */
 
 /* Specific elements that need border/shadow transitions */
 button,
@@ -230,6 +226,12 @@ input,
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Only apply transitions to direct children of body to reduce performance impact */
+  body > * {
+    transition:
+      background-color var(--theme-transition-duration) var(--theme-transition-ease),
+      color var(--theme-transition-duration) var(--theme-transition-ease);
   }
   /* add cursor pointer to all buttons */
   button:not([disabled]),

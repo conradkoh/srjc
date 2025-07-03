@@ -106,8 +106,8 @@ importers:
         specifier: ^1.24.8
         version: 1.24.8(react@19.1.0)
       convex-helpers:
-        specifier: ^0.1.91
-        version: 0.1.91(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.49)
+        specifier: ^0.1.96
+        version: 0.1.96(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.49)
       lucide-react:
         specifier: ^0.511.0
         version: 0.511.0(react@19.1.0)
@@ -182,8 +182,8 @@ importers:
         specifier: ^1.24.8
         version: 1.24.8(react@19.1.0)
       convex-helpers:
-        specifier: ^0.1.91
-        version: 0.1.91(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.49)
+        specifier: ^0.1.96
+        version: 0.1.96(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.49)
     devDependencies:
       '@edge-runtime/vm':
         specifier: ^5.0.0
@@ -2285,8 +2285,8 @@ packages:
     resolution: {integrity: sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==}
     engines: {node: '>= 0.6'}
 
-  convex-helpers@0.1.91:
-    resolution: {integrity: sha512-sSTUxO0lxs1uNCx9G2dY8cs2Jn7Xtxs7Z42JIC6ua0QGSSxTjs+1uMgpoiRDugCYvH4ClQvvZP8HeN7HHnC72A==}
+  convex-helpers@0.1.96:
+    resolution: {integrity: sha512-/qh5NemdRi9LWlPOkUbdxrkT+aVAOqYoiCxJ+7/5w4MKIRyoJhwGHxHHI65tFJJ4geTCJyLlZwtZee/K4VyCIw==}
     hasBin: true
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
@@ -6076,7 +6076,7 @@ snapshots:
 
   content-type@1.0.5: {}
 
-  convex-helpers@0.1.91(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.49):
+  convex-helpers@0.1.96(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.49):
     dependencies:
       convex: 1.24.8(react@19.1.0)
     optionalDependencies:

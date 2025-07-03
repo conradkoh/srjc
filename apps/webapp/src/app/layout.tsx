@@ -8,6 +8,7 @@ import { AppInfoProvider } from '@/modules/app/AppInfoProvider';
 import { AuthProvider } from '@/modules/auth/AuthProvider';
 import { ThemeProvider } from '@/modules/theme/ThemeProvider';
 import type { Theme } from '@/modules/theme/theme-utils';
+import { ConvexQueryCacheProvider } from 'convex-helpers/react/cache/provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -61,16 +62,18 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ConvexClientProvider>
-          <AppInfoProvider>
-            <AuthProvider>
-              <ThemeProvider>
-                <div className="flex flex-col h-screen overflow-hidden">
-                  <Navigation />
-                  <main className="flex-1 flex flex-col overflow-scroll">{children}</main>
-                </div>
-              </ThemeProvider>
-            </AuthProvider>
-          </AppInfoProvider>
+          <ConvexQueryCacheProvider>
+            <AppInfoProvider>
+              <AuthProvider>
+                <ThemeProvider>
+                  <div className="flex flex-col h-screen overflow-hidden">
+                    <Navigation />
+                    <main className="flex-1 flex flex-col overflow-scroll">{children}</main>
+                  </div>
+                </ThemeProvider>
+              </AuthProvider>
+            </AppInfoProvider>
+          </ConvexQueryCacheProvider>
         </ConvexClientProvider>
         <Toaster />
       </body>

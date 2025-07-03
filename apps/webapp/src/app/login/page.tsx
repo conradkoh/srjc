@@ -140,7 +140,7 @@ function _renderLoginOptions(googleAuthAvailable: boolean | null, sessionId: str
         {_renderCodeLoginOption()}
 
         {/* Anonymous Login */}
-        {sessionId && <AnonymousLoginButton sessionId={sessionId} variant="list" />}
+        {sessionId && <AnonymousLoginButton variant="list" />}
       </div>
 
       {/* Recovery Section */}

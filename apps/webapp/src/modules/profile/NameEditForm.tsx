@@ -202,8 +202,8 @@ export function NameEditForm() {
       id: 'google',
       name: 'Google',
       icon: <GoogleIcon className="mr-2 h-4 w-4" />,
-      isConnected: !!currentUser?.google,
-      connectedEmail: currentUser?.google?.email,
+      isConnected: currentUser?.type === 'full' && !!currentUser.google,
+      connectedEmail: currentUser?.type === 'full' ? currentUser.google?.email : undefined,
     }),
     [currentUser]
   );
@@ -292,7 +292,7 @@ function _renderDisplayView(
   handleGoogleConnect: () => Promise<void>,
   isConnectingGoogle: boolean,
   googleAuthAvailable: boolean,
-  authMethod: string,
+  authMethod: string | undefined,
   googleProvider: {
     id: string;
     name: string;
@@ -329,7 +329,7 @@ function _renderDisplayView(
  */
 function _renderUserAvatar(user: { type: string; google?: { picture?: string }; name: string }) {
   // Check for profile picture from any linked account
-  const profilePicture = user.google?.picture;
+  const profilePicture = user.type === 'full' ? user.google?.picture : undefined;
 
   if (profilePicture) {
     return (
@@ -354,7 +354,7 @@ function _renderUserTypeInfo(
   handleGoogleConnect: () => Promise<void>,
   isConnectingGoogle: boolean,
   googleAuthAvailable: boolean,
-  authMethod: string,
+  authMethod: string | undefined,
   googleProvider: {
     id: string;
     name: string;
@@ -396,7 +396,9 @@ function _renderUserTypeInfo(
 /**
  * Renders subtle session information.
  */
-function _renderSessionInfo(authMethod: string) {
+function _renderSessionInfo(authMethod: string | undefined) {
+  if (!authMethod) return null;
+
   const sessionLabels = {
     google: 'Active Google session',
     login_code: 'Signed in with code',

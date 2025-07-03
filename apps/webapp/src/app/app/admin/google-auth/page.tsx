@@ -1,13 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
-import { useAppInfo } from '@/modules/app/useAppInfo';
 import { api } from '@workspace/backend/convex/_generated/api';
 import {
   useSessionAction,
@@ -28,12 +20,20 @@ import {
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { useAppInfo } from '@/modules/app/useAppInfo';
 
 /**
  * Displays Google Authentication configuration page with OAuth setup, testing, and management capabilities.
  */
 export default function GoogleAuthConfigPage() {
-  const { appInfo, isLoading: appInfoLoading } = useAppInfo();
+  const { isLoading: appInfoLoading } = useAppInfo();
 
   // State for form inputs
   const [enabled, setEnabled] = useState(false);
@@ -468,14 +468,9 @@ export default function GoogleAuthConfigPage() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              {configData?.hasClientSecret ? (
-                <>
-                  A client secret is already configured. Click to enter a new secret, or leave empty
-                  to keep the current one.
-                </>
-              ) : (
-                <>Copy this from your Google Cloud Console OAuth 2.0 Client IDs</>
-              )}
+              {configData?.hasClientSecret
+                ? 'A client secret is already configured. Click to enter a new secret, or leave empty to keep the current one.'
+                : 'Copy this from your Google Cloud Console OAuth 2.0 Client IDs'}
             </p>
           </div>
 
@@ -851,10 +846,7 @@ async function _handleSave(params: _SaveConfigParams): Promise<void> {
 async function _handleTest(
   clientId: string,
   clientSecret: string,
-  testConfig: (params: {
-    clientId: string;
-    clientSecret?: string;
-  }) => Promise<{
+  testConfig: (params: { clientId: string; clientSecret?: string }) => Promise<{
     success: boolean;
     message: string;
     details?: { issues?: string[] };

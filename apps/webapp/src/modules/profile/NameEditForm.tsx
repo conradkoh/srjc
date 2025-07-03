@@ -1,5 +1,12 @@
 'use client';
 
+import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
+import { X } from 'lucide-react';
+import NextImage from 'next/image';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,16 +24,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useGoogleAuthAvailable } from '@/modules/app/useAppInfo';
-import { useAuthState } from '@/modules/auth/AuthProvider';
+import { useAuthState, useCurrentUser } from '@/modules/auth/AuthProvider';
 import { ConnectButton, GoogleIcon } from '@/modules/auth/ConnectButton';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
-import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
-import { useAction } from 'convex/react';
-import { X } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
-import { toast } from 'sonner';
 
 interface _DisconnectDialogState {
   isOpen: boolean;
@@ -49,14 +48,21 @@ function _generateState(): string {
  * Supports different user types (Google, anonymous, full account) with appropriate messaging.
  */
 export function NameEditForm() {
+  const currentUser = useCurrentUser();
   const authState = useAuthState();
-  const updateUserName = useSessionMutation(api.auth.updateUserName);
-  const disconnectGoogle = useSessionMutation(api.googleAuth.disconnectGoogle);
+  const authMethod = authState?.state === 'authenticated' ? authState.authMethod : undefined;
 
+  // Get Google auth availability
+  const googleAuthAvailable = useSessionQuery(api.system.thirdPartyAuthConfig.getGoogleAuthConfig);
+  const isGoogleAuthAvailable = googleAuthAvailable?.enabled ?? false;
+
+  // State for editing
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(authState?.state === 'authenticated' ? authState.user.name : '');
-  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // State for Google connection
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
 
   // State for disconnect confirmation dialog
@@ -67,61 +73,27 @@ export function NameEditForm() {
     isDisconnecting: false,
   });
 
-  const googleAuthAvailable = useGoogleAuthAvailable();
-  const generateGoogleAuthUrl = useAction(api.googleAuth.generateGoogleAuthUrl);
+  // Convex mutations
+  const updateUserName = useSessionMutation(api.auth.updateUserName);
+  const disconnectGoogle = useSessionMutation(api.googleAuth.disconnectGoogle);
 
-  /**
-   * Handles Google connect button click and initiates OAuth flow.
-   */
-  const handleGoogleConnect = useCallback(async () => {
-    // Check if Google auth is enabled
-    if (!googleAuthAvailable) {
-      toast.error('Google authentication is currently disabled or not configured');
-      return;
+  // Initialize name when user data is available
+  useEffect(() => {
+    if (currentUser?.name) {
+      setName(currentUser.name);
     }
+  }, [currentUser?.name]);
 
-    setIsConnectingGoogle(true);
+  // Handle name change
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    setError(null);
+  }, []);
 
-    try {
-      // Clean up any previous state/flags
-      sessionStorage.removeItem('google_oauth_connect_state');
-      sessionStorage.removeItem('google_oauth_connect_processed');
-      sessionStorage.removeItem('google_oauth_connect_in_progress');
-
-      // Generate CSRF state and store it with a different key than login
-      const state = _generateState();
-      sessionStorage.setItem('google_oauth_connect_state', state);
-
-      // Generate Google auth URL with connect-specific redirect URI
-      const redirectUri = `${window.location.origin}/app/profile/connect/google/callback`;
-      const result = await generateGoogleAuthUrl({
-        redirectUri,
-        state,
-      });
-
-      // Redirect to Google
-      window.location.href = result.authUrl;
-    } catch (error) {
-      console.error('Failed to initiate Google connect:', error);
-      toast.error('Failed to start Google connection. Please try again.');
-      setIsConnectingGoogle(false);
-    }
-  }, [googleAuthAvailable, generateGoogleAuthUrl]);
-
-  /**
-   * Memoized user data to prevent unnecessary re-renders.
-   */
-  const currentUser = useMemo(() => {
-    return authState?.state === 'authenticated' ? authState.user : null;
-  }, [authState]);
-
-  /**
-   * Handles form submission to update the user's display name.
-   */
+  // Handle form submission
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-
       if (!name.trim()) {
         setError('Name cannot be empty');
         return;
@@ -131,21 +103,12 @@ export function NameEditForm() {
       setError(null);
 
       try {
-        const result = await updateUserName({
-          newName: name,
-        });
-
-        if (result.success) {
-          toast.success(result.message);
-          setIsEditing(false);
-        } else {
-          setError(result.message);
-          toast.error(result.message);
-        }
+        await updateUserName({ newName: name.trim() });
+        setIsEditing(false);
+        toast.success('Name updated successfully');
       } catch (error) {
         console.error('Failed to update name:', error);
-        setError('An unexpected error occurred. Please try again.');
-        toast.error('Failed to update name. Please try again.');
+        setError('Failed to update name. Please try again.');
       } finally {
         setIsLoading(false);
       }
@@ -153,32 +116,46 @@ export function NameEditForm() {
     [name, updateUserName]
   );
 
-  /**
-   * Handles canceling the edit operation and resets the form.
-   */
+  // Handle cancel editing
   const handleCancel = useCallback(() => {
-    setName(authState?.state === 'authenticated' ? authState.user.name : '');
-    setError(null);
     setIsEditing(false);
-  }, [authState]);
+    setName(currentUser?.name || '');
+    setError(null);
+  }, [currentUser?.name]);
 
-  /**
-   * Starts the editing mode.
-   */
+  // Handle start editing
   const startEditing = useCallback(() => {
     setIsEditing(true);
   }, []);
 
-  /**
-   * Handles input changes for the name field.
-   */
-  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  }, []);
+  // Handle Google connection
+  const handleGoogleConnect = useCallback(async () => {
+    setIsConnectingGoogle(true);
+    try {
+      const state = _generateState();
+      sessionStorage.setItem('google_oauth_connect_in_progress', 'true');
+      sessionStorage.setItem('google_oauth_state', state);
 
-  /**
-   * Shows disconnect confirmation dialog for a provider.
-   */
+      const redirectUri = `${window.location.origin}/app/profile/connect/google/callback`;
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
+        client_id: googleAuthAvailable?.clientId || '',
+        redirect_uri: redirectUri,
+        response_type: 'code',
+        scope: 'openid email profile',
+        state,
+        access_type: 'offline',
+        prompt: 'consent',
+      })}`;
+
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('Failed to initiate Google connection:', error);
+      toast.error('Failed to connect Google account');
+      setIsConnectingGoogle(false);
+    }
+  }, [googleAuthAvailable?.clientId]);
+
+  // Handle disconnect confirmation
   const showDisconnectConfirmation = useCallback((providerId: string, providerName: string) => {
     setDisconnectDialog({
       isOpen: true,
@@ -188,67 +165,64 @@ export function NameEditForm() {
     });
   }, []);
 
-  /**
-   * Handles confirmed disconnect for a provider.
-   */
-  const confirmDisconnectProvider = useCallback(
-    async (providerId: string) => {
-      if (providerId !== 'google') {
-        toast.error('Only Google disconnect is currently supported');
-        return;
-      }
-
+  // Handle disconnect
+  const handleDisconnect = useCallback(async () => {
+    if (disconnectDialog.providerId === 'google') {
       setDisconnectDialog((prev) => ({ ...prev, isDisconnecting: true }));
-
       try {
-        const result = await disconnectGoogle();
-        if (result.success) {
-          toast.success(result.message);
-          setDisconnectDialog({
-            isOpen: false,
-            providerId: '',
-            providerName: '',
-            isDisconnecting: false,
-          });
-        } else {
-          toast.error('Failed to disconnect Google account');
-        }
+        await disconnectGoogle();
+        toast.success('Google account disconnected successfully');
+        setDisconnectDialog({
+          isOpen: false,
+          providerId: '',
+          providerName: '',
+          isDisconnecting: false,
+        });
       } catch (error) {
-        console.error('Failed to disconnect Google account:', error);
-        toast.error('Failed to disconnect Google account. Please try again.');
-      } finally {
+        console.error('Failed to disconnect Google:', error);
+        toast.error('Failed to disconnect Google account');
         setDisconnectDialog((prev) => ({ ...prev, isDisconnecting: false }));
       }
-    },
-    [disconnectGoogle]
+    }
+  }, [disconnectDialog.providerId, disconnectGoogle]);
+
+  // Close disconnect dialog
+  const closeDisconnectDialog = useCallback(() => {
+    setDisconnectDialog({
+      isOpen: false,
+      providerId: '',
+      providerName: '',
+      isDisconnecting: false,
+    });
+  }, []);
+
+  // Memoized Google provider info
+  const googleProvider = useMemo(
+    () => ({
+      id: 'google',
+      name: 'Google',
+      icon: <GoogleIcon className="mr-2 h-4 w-4" />,
+      isConnected: !!currentUser?.google,
+      connectedEmail: currentUser?.google?.email,
+    }),
+    [currentUser]
   );
 
-  /**
-   * Handles dialog open/close state changes.
-   */
-  const handleDialogOpenChange = useCallback(
-    (open: boolean) => {
-      if (!disconnectDialog.isDisconnecting) {
-        setDisconnectDialog((prev) => ({ ...prev, isOpen: open }));
-      }
-    },
-    [disconnectDialog.isDisconnecting]
-  );
-
-  /**
-   * Handles disconnect action click.
-   */
+  // Handle disconnect click
   const handleDisconnectClick = useCallback(() => {
-    confirmDisconnectProvider(disconnectDialog.providerId);
-  }, [confirmDisconnectProvider, disconnectDialog.providerId]);
+    showDisconnectConfirmation(googleProvider.id, googleProvider.name);
+  }, [showDisconnectConfirmation, googleProvider.id, googleProvider.name]);
 
   if (!currentUser) {
-    return null;
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       {_renderHeader(isEditing, startEditing)}
+
+      {/* Main content */}
       {isEditing
         ? _renderEditForm(name, error, isLoading, handleNameChange, handleSubmit, handleCancel)
         : _renderDisplayView(
@@ -256,14 +230,17 @@ export function NameEditForm() {
             showDisconnectConfirmation,
             handleGoogleConnect,
             isConnectingGoogle,
-            !!googleAuthAvailable
+            !!isGoogleAuthAvailable,
+            authMethod,
+            googleProvider,
+            handleDisconnectClick
           )}
 
       {/* Disconnect confirmation dialog */}
-      <AlertDialog open={disconnectDialog.isOpen} onOpenChange={handleDialogOpenChange}>
+      <AlertDialog open={disconnectDialog.isOpen} onOpenChange={closeDisconnectDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Disconnect {disconnectDialog.providerName}?</AlertDialogTitle>
+            <AlertDialogTitle>Disconnect {disconnectDialog.providerName}</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to disconnect your {disconnectDialog.providerName} account? You
               can reconnect it later if needed.
@@ -274,9 +251,9 @@ export function NameEditForm() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDisconnectClick}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDisconnect}
               disabled={disconnectDialog.isDisconnecting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {disconnectDialog.isDisconnecting ? 'Disconnecting...' : 'Disconnect'}
             </AlertDialogAction>
@@ -314,7 +291,16 @@ function _renderDisplayView(
   showDisconnectConfirmation: (providerId: string, providerName: string) => void,
   handleGoogleConnect: () => Promise<void>,
   isConnectingGoogle: boolean,
-  googleAuthAvailable: boolean
+  googleAuthAvailable: boolean,
+  authMethod: string,
+  googleProvider: {
+    id: string;
+    name: string;
+    icon: React.ReactNode;
+    isConnected: boolean;
+    connectedEmail?: string;
+  },
+  handleDisconnectClick: () => void
 ) {
   return (
     <div className="p-4 bg-secondary/50 rounded-md">
@@ -327,7 +313,10 @@ function _renderDisplayView(
             showDisconnectConfirmation,
             handleGoogleConnect,
             isConnectingGoogle,
-            googleAuthAvailable
+            googleAuthAvailable,
+            authMethod,
+            googleProvider,
+            handleDisconnectClick
           )}
         </div>
       </div>
@@ -344,7 +333,13 @@ function _renderUserAvatar(user: { type: string; google?: { picture?: string }; 
 
   if (profilePicture) {
     return (
-      <img src={profilePicture} alt={`${user.name}'s profile`} className="w-12 h-12 rounded-full" />
+      <NextImage
+        src={profilePicture}
+        alt={`${user.name}'s profile`}
+        width={48}
+        height={48}
+        className="w-12 h-12 rounded-full"
+      />
     );
   }
   return null;
@@ -358,11 +353,17 @@ function _renderUserTypeInfo(
   showDisconnectConfirmation: (providerId: string, providerName: string) => void,
   handleGoogleConnect: () => Promise<void>,
   isConnectingGoogle: boolean,
-  googleAuthAvailable: boolean
+  googleAuthAvailable: boolean,
+  authMethod: string,
+  googleProvider: {
+    id: string;
+    name: string;
+    icon: React.ReactNode;
+    isConnected: boolean;
+    connectedEmail?: string;
+  },
+  handleDisconnectClick: () => void
 ) {
-  const authState = useAuthState();
-  const authMethod = authState?.state === 'authenticated' ? authState.authMethod : undefined;
-
   return (
     <div className="mt-3 space-y-4">
       {/* Show email if available */}
@@ -381,7 +382,9 @@ function _renderUserTypeInfo(
         showDisconnectConfirmation,
         handleGoogleConnect,
         isConnectingGoogle,
-        googleAuthAvailable
+        googleAuthAvailable,
+        googleProvider,
+        handleDisconnectClick
       )}
 
       {/* Show user type specific info */}
@@ -413,27 +416,20 @@ function _renderSessionInfo(authMethod: string) {
  * Renders third-party authentication accounts section.
  */
 function _renderThirdPartyAccounts(
-  user: { google?: { email?: string } },
-  showDisconnectConfirmation: (providerId: string, providerName: string) => void,
+  _user: { google?: { email?: string } },
+  _showDisconnectConfirmation: (providerId: string, providerName: string) => void,
   handleGoogleConnect: () => Promise<void>,
   isConnectingGoogle: boolean,
-  googleAuthAvailable: boolean
+  googleAuthAvailable: boolean,
+  googleProvider: {
+    id: string;
+    name: string;
+    icon: React.ReactNode;
+    isConnected: boolean;
+    connectedEmail?: string;
+  },
+  handleDisconnectClick: () => void
 ) {
-  const googleProvider = useMemo(
-    () => ({
-      id: 'google',
-      name: 'Google',
-      icon: <GoogleIcon className="mr-2 h-4 w-4" />,
-      isConnected: !!user.google,
-      connectedEmail: user.google?.email,
-    }),
-    [user]
-  );
-
-  const handleDisconnectClick = useCallback(() => {
-    showDisconnectConfirmation(googleProvider.id, googleProvider.name);
-  }, [showDisconnectConfirmation, googleProvider.id, googleProvider.name]);
-
   // Only show Google row if available or already connected
   const showGoogleRow = googleAuthAvailable || googleProvider.isConnected;
 

@@ -2,7 +2,7 @@
 
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
-import React, { createContext, useMemo, type ReactNode } from 'react';
+import { createContext, type ReactNode, useMemo } from 'react';
 
 /**
  * App Info data structure from the backend

@@ -1,11 +1,11 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { AdminGuard } from '@/modules/admin/AdminGuard';
 import { ArrowLeft, Menu, Settings, Shield, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { AdminGuard } from '@/modules/admin/AdminGuard';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -69,6 +69,8 @@ function _renderMobileSidebar(
     <div className="lg:hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
       <div
         className="fixed left-0 top-0 bottom-0 w-64 bg-background border-r p-4"
+        role="dialog"
+        aria-modal="true"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >

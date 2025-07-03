@@ -114,14 +114,16 @@ html {
 
 /* Apply transitions to specific elements that change with theme */
 body {
-  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease), color
-    var(--theme-transition-duration) var(--theme-transition-ease);
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* Only apply transitions to direct children of body to reduce performance impact */
 body > * {
-  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease), color
-    var(--theme-transition-duration) var(--theme-transition-ease);
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* Specific elements that need border/shadow transitions */
@@ -130,8 +132,9 @@ input,
 .card,
 .border,
 [class*="border-"] {
-  transition: border-color var(--theme-transition-duration) var(--theme-transition-ease), box-shadow
-    var(--theme-transition-duration) var(--theme-transition-ease);
+  transition:
+    border-color var(--theme-transition-duration) var(--theme-transition-ease),
+    box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* Disable transitions when user has reduced motion preference */

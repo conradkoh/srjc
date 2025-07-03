@@ -1,5 +1,12 @@
 'use client';
 
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useAction } from 'convex/react';
+import { useSessionId } from 'convex-helpers/react/sessions';
+import { CopyIcon, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
+import { useCallback, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,13 +24,6 @@ import { useAuthState } from '@/modules/auth/AuthProvider';
 import { LoginCodeGenerator } from '@/modules/auth/LoginCodeGenerator';
 import { NameEditForm } from '@/modules/profile/NameEditForm';
 import { ThemeSettings } from '@/modules/theme/ThemeSettings';
-import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionId } from 'convex-helpers/react/sessions';
-import { useAction } from 'convex/react';
-import { CopyIcon, RefreshCw } from 'lucide-react';
-import Link from 'next/link';
-import { useCallback, useMemo, useState } from 'react';
-import { toast } from 'sonner';
 
 /**
  * Displays the user profile page with account management, theme settings, and recovery options.

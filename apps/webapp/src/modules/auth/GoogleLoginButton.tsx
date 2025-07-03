@@ -1,12 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { useGoogleAuthAvailable } from '@/modules/app/useAppInfo';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useAction } from 'convex/react';
 import { ChevronRight } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { useGoogleAuthAvailable } from '@/modules/app/useAppInfo';
 
 export interface GoogleLoginButtonProps {
   className?: string;

@@ -1,5 +1,12 @@
 'use client';
 
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { Settings } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,13 +27,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuthState } from '@/modules/auth/AuthProvider';
-import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
-import { Settings } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
 
 /**
  * User menu dropdown component with profile links and logout functionality.
@@ -39,13 +39,6 @@ export function UserMenu() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const logout = useSessionMutation(api.auth.logout);
 
-  if (!authState || authState.state !== 'authenticated') {
-    return null;
-  }
-
-  /**
-   * Handles the logout process with error handling and navigation.
-   */
   const handleLogout = useCallback(async () => {
     setIsLoggingOut(true);
     try {
@@ -60,21 +53,15 @@ export function UserMenu() {
     }
   }, [logout, router]);
 
-  /**
-   * Shows the logout confirmation dialog.
-   */
   const showLogoutConfirmation = useCallback(() => {
     setShowLogoutConfirm(true);
   }, []);
 
-  /**
-   * Handles the logout confirmation dialog state changes.
-   */
   const handleLogoutConfirmChange = useCallback((open: boolean) => {
     setShowLogoutConfirm(open);
   }, []);
 
-  return (
+  return !authState || authState.state !== 'authenticated' ? null : (
     <>
       {_renderLogoutConfirmDialog(
         showLogoutConfirm,

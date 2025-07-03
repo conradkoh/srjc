@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { useAuthState } from '@/modules/auth/AuthProvider';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { Button } from '@/components/ui/button';
+import { useAuthState } from '@/modules/auth/AuthProvider';
 
 /**
  * Displays the main application dashboard with user-specific content and navigation.

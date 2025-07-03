@@ -1,16 +1,14 @@
+import { ConvexError, v } from 'convex/values';
 import { SessionIdArg } from 'convex-helpers/server/sessions';
-import { v } from 'convex/values';
-import { ConvexError } from 'convex/values';
 import { featureFlags } from '../config/featureFlags';
-import type { AuthState } from '../modules/auth/types/AuthState';
 import { api } from './_generated/api';
 import type { Doc, Id } from './_generated/dataModel';
 import {
   type ActionCtx,
-  type MutationCtx,
-  type QueryCtx,
   action,
+  type MutationCtx,
   mutation,
+  type QueryCtx,
   query,
 } from './_generated/server';
 
@@ -456,7 +454,7 @@ export const connectGoogle = mutation({
     // Handle anonymous users by converting them to full users
     if (currentUser.type === 'anonymous') {
       // Convert anonymous user to full user with Google profile
-      const convertedUser = await _convertAnonymousToFullUser(ctx, currentUser, profile);
+      const _convertedUser = await _convertAnonymousToFullUser(ctx, currentUser, profile);
 
       // Update session auth method to Google
       await ctx.db.patch(session._id, {

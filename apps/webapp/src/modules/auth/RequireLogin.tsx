@@ -1,9 +1,9 @@
 'use client';
 
-import { UnauthorizedPage } from '@/components/UnauthorizedPage';
-import { useAuthState } from '@/modules/auth/AuthProvider';
 import { Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
+import { UnauthorizedPage } from '@/components/UnauthorizedPage';
+import { useAuthState } from '@/modules/auth/AuthProvider';
 
 /**
  * Authentication guard component that requires user login to access protected content.

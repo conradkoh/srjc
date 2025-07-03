@@ -1,16 +1,15 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
 import { ChevronRight, Loader2, UserCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface AnonymousLoginButtonProps {
-  sessionId: string;
   variant?: 'list' | 'button';
   className?: string;
 }
@@ -20,7 +19,6 @@ export interface AnonymousLoginButtonProps {
  * Supports both list-style and button-style layouts with loading states.
  */
 export const AnonymousLoginButton = ({
-  sessionId,
   variant = 'button',
   className = 'w-full',
 }: AnonymousLoginButtonProps) => {
@@ -44,19 +42,6 @@ export const AnonymousLoginButton = ({
       setIsLoading(false);
     }
   }, [loginAnon, router]);
-
-  /**
-   * Handles keyboard events for accessibility (Enter and Space keys).
-   */
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        handleClick();
-      }
-    },
-    [handleClick]
-  );
 
   // List-style layout
   if (variant === 'list') {

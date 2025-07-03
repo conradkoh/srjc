@@ -1,3 +1,9 @@
+import { api } from '@workspace/backend/convex/_generated/api';
+import type { Doc, Id } from '@workspace/backend/convex/_generated/dataModel';
+import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { Loader2, Trash2, UserCog, UserRound } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,12 +25,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useCurrentUser } from '@/modules/auth/AuthProvider';
-import { api } from '@workspace/backend/convex/_generated/api';
-import type { Doc, Id } from '@workspace/backend/convex/_generated/dataModel';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
-import { Loader2, Trash2, UserCog, UserRound } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { AttendanceStatus } from '../types';
 
 interface AttendanceDialogProps {

@@ -1,5 +1,12 @@
 'use client';
 
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useAction } from 'convex/react';
+import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,13 +17,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useAuthState } from '@/modules/auth/AuthProvider';
-import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
-import { useAction } from 'convex/react';
-import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 
 interface _OAuthValidationResult {
   isValid: boolean;
@@ -256,7 +256,7 @@ async function _validateCSRFState(state: string): Promise<boolean> {
   try {
     const storedState = sessionStorage.getItem('google_oauth_connect_state');
     return storedState === state;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -290,7 +290,7 @@ async function _validateCSRFStateRobust(state: string): Promise<_CSRFValidationR
     }
 
     return { isValid: false, error: 'Invalid CSRF state' };
-  } catch (error) {
+  } catch (_error) {
     return { isValid: false, error: 'Failed to validate CSRF state' };
   }
 }

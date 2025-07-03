@@ -1,5 +1,13 @@
 'use client';
 
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useAction } from 'convex/react';
+import { useSessionId } from 'convex-helpers/react/sessions';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,14 +20,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { AuthProvider } from '@/modules/auth/AuthProvider';
-import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionId } from 'convex-helpers/react/sessions';
-import { useAction } from 'convex/react';
-import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
 
 /**
  * Account recovery page that allows users to recover their account using a recovery code.

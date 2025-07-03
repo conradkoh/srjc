@@ -1,6 +1,5 @@
+import { ConvexError, v } from 'convex/values';
 import { SessionIdArg } from 'convex-helpers/server/sessions';
-import { v } from 'convex/values';
-import { ConvexError } from 'convex/values';
 import { featureFlags } from '../config/featureFlags';
 import { getAccessLevel, isSystemAdmin } from '../modules/auth/accessControl';
 import { generateLoginCode, getCodeExpirationTime, isCodeExpired } from '../modules/auth/codeUtils';
@@ -97,10 +96,10 @@ export const loginAnon = mutation({
     });
 
     // Create a new session if it doesn't exist
-    let sessionId: Id<'sessions'>;
+    let _sessionId: Id<'sessions'>;
     if (!existingSession) {
       const now = Date.now();
-      sessionId = await ctx.db.insert('sessions', {
+      _sessionId = await ctx.db.insert('sessions', {
         sessionId: args.sessionId,
         userId: userId as Id<'users'>,
         createdAt: now,
@@ -112,7 +111,7 @@ export const loginAnon = mutation({
         userId: userId as Id<'users'>,
         authMethod: 'anonymous',
       });
-      sessionId = existingSession._id;
+      _sessionId = existingSession._id;
     }
 
     return { success: true, userId };

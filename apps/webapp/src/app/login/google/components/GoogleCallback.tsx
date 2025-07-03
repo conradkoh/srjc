@@ -1,8 +1,8 @@
 'use client';
 
 import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
 import { useAction } from 'convex/react';
+import { useSessionMutation } from 'convex-helpers/react/sessions';
 import { Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -31,21 +31,6 @@ export const GoogleCallback = ({ redirectPath = '/app' }: GoogleCallbackProps) =
 
   // Check for immediate errors (like cancellation) and redirect without showing loading
   const hasError = searchParams.get('error');
-  if (hasError) {
-    // Don't show loading state for errors - redirect immediately
-    useEffect(() => {
-      const error = searchParams.get('error');
-      if (error === 'access_denied') {
-        console.error('OAuth cancelled by user');
-      } else {
-        console.error('OAuth error:', error, searchParams.get('error_description'));
-      }
-      router.push('/login');
-    }, [router, searchParams]);
-
-    // Return null to avoid any flash of loading content
-    return null;
-  }
 
   /**
    * Processes the OAuth callback with comprehensive error handling.
@@ -113,15 +98,36 @@ export const GoogleCallback = ({ redirectPath = '/app' }: GoogleCallbackProps) =
     }
   }, [searchParams, exchangeGoogleCode, loginWithGoogle, router, redirectPath]);
 
+  // Handle errors immediately
   useEffect(() => {
-    // Add a small delay before processing to ensure the component is fully mounted
-    // This helps prevent race conditions with sessionStorage access
-    const timer = setTimeout(() => {
-      processCallback();
-    }, 50);
+    if (hasError) {
+      const error = searchParams.get('error');
+      if (error === 'access_denied') {
+        console.error('OAuth cancelled by user');
+      } else {
+        console.error('OAuth error:', error, searchParams.get('error_description'));
+      }
+      router.push('/login');
+    }
+  }, [hasError, router, searchParams]);
 
-    return () => clearTimeout(timer);
-  }, [processCallback]);
+  // Process callback on mount (only if no error)
+  useEffect(() => {
+    if (!hasError) {
+      // Add a small delay before processing to ensure the component is fully mounted
+      // This helps prevent race conditions with sessionStorage access
+      const timer = setTimeout(() => {
+        processCallback();
+      }, 50);
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasError, processCallback]);
+
+  // Return null for errors to avoid any flash of loading content
+  if (hasError) {
+    return null;
+  }
 
   return _renderLoadingState(isProcessing);
 };

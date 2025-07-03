@@ -1,11 +1,11 @@
 'use client';
 
-import { UserMenu } from '@/components/UserMenu';
-import { Button } from '@/components/ui/button';
-import { useAuthState } from '@/modules/auth/AuthProvider';
 import { featureFlags } from '@workspace/backend/config/featureFlags';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { UserMenu } from '@/components/UserMenu';
+import { Button } from '@/components/ui/button';
+import { useAuthState } from '@/modules/auth/AuthProvider';
 
 /**
  * Main navigation header component with authentication state handling.

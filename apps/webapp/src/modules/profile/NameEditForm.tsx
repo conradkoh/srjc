@@ -4,7 +4,6 @@ import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
 import { X } from 'lucide-react';
-import NextImage from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -333,7 +332,8 @@ function _renderUserAvatar(user: { type: string; google?: { picture?: string }; 
 
   if (profilePicture) {
     return (
-      <NextImage
+      // biome-ignore lint/performance/noImgElement: this is an external image
+      <img
         src={profilePicture}
         alt={`${user.name}'s profile`}
         width={48}

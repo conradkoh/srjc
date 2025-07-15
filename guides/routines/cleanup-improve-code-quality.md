@@ -21,13 +21,14 @@ Target only modified TypeScript/JavaScript files:
 git status --porcelain | grep -E '\.(ts|tsx|js|jsx)$' | awk '{print $2}'
 ```
 
-**For each file, follow steps 1-6 in order:**
+**For each file, follow steps 1-7 in order:**
 
 ### Step 1: Add Comments to All Functions
 
 **Action**: Add a descriptive comment above every function (exported and internal).
 
 **What to do:**
+
 - Place a comment directly above each function declaration
 - Describe what the function does, not how it does it
 - Use present tense ("Creates", "Validates", "Displays")
@@ -61,17 +62,18 @@ export function UserProfile({ userId }: UserProfileProps) {
 **Action**: Add `_` prefix to all non-exported functions, interfaces, types, and constants.
 
 **What to do:**
+
 - Scan through the file for any function, interface, type, or constant that is NOT exported
 - Add `_` prefix to the name
 - Update all references to use the new prefixed name
 
 ```typescript
 // Functions
-function _validateInput(input: string): boolean { }
+function _validateInput(input: string): boolean {}
 
-// Interfaces and Types  
-interface _UserState { }
-type _ValidationResult = { };
+// Interfaces and Types
+interface _UserState {}
+type _ValidationResult = {};
 
 // Constants
 const _DEFAULT_TIMEOUT = 5000;
@@ -82,26 +84,27 @@ const _DEFAULT_TIMEOUT = 5000;
 **Action**: Replace every instance of `any` with proper types.
 
 **What to do:**
+
 - Search for all occurrences of `any` in the file
 - Replace with specific interfaces, types, or `unknown` with type guards
 - Use proper React event types and Convex context types
 
 ```typescript
 // ❌ Replace this
-function processData(data: any): any { }
+function processData(data: any): any {}
 
 // ✅ With this
 interface DataItem {
   id: string;
   value: number;
 }
-function processData(data: DataItem[]): number[] { }
+function processData(data: DataItem[]): number[] {}
 
 // ✅ Use proper event types
-function handleClick(event: React.MouseEvent<HTMLButtonElement>) { }
+function handleClick(event: React.MouseEvent<HTMLButtonElement>) {}
 
 // ✅ Use proper Convex context types
-import { type MutationCtx, type QueryCtx } from './_generated/server';
+import { type MutationCtx, type QueryCtx } from "./_generated/server";
 ```
 
 ### Step 4: Reorganize File Structure
@@ -109,6 +112,7 @@ import { type MutationCtx, type QueryCtx } from './_generated/server';
 **Action**: Rearrange the entire file contents in this exact order.
 
 **What to do:**
+
 1. Move all imports to the top (external libraries first, then internal imports)
 2. Move all exported interfaces and types to the top (after imports)
 3. Move all internal interfaces and types (prefixed with `_`) next
@@ -117,24 +121,26 @@ import { type MutationCtx, type QueryCtx } from './_generated/server';
 
 ```typescript
 // 1. Imports (external first, then internal)
-import React from 'react';
-import { api } from '@/convex/_generated/api';
+import React from "react";
+import { api } from "@/convex/_generated/api";
 
 // 2. Public interfaces and types
-export interface UserProfileProps { }
-export type UserRole = 'admin' | 'user' | 'guest';
+export interface UserProfileProps {}
+export type UserRole = "admin" | "user" | "guest";
 
 // 3. Internal interfaces and types (prefixed with _)
-interface _UserState { }
-type _ValidationResult = { };
+interface _UserState {}
+type _ValidationResult = {};
 
 // 4. Main exported functions/components
-export function UserProfile({ userId }: UserProfileProps) { }
-export async function createUser(userData: CreateUserRequest): Promise<string> { }
+export function UserProfile({ userId }: UserProfileProps) {}
+export async function createUser(
+  userData: CreateUserRequest
+): Promise<string> {}
 
 // 5. Internal helper functions (at bottom)
-function _validateUserData(userData: CreateUserRequest): _ValidationResult { }
-function _formatDisplayName(firstName: string, lastName: string): string { }
+function _validateUserData(userData: CreateUserRequest): _ValidationResult {}
+function _formatDisplayName(firstName: string, lastName: string): string {}
 ```
 
 ### Step 5: Apply React Performance Optimizations
@@ -142,6 +148,7 @@ function _formatDisplayName(firstName: string, lastName: string): string { }
 **Action**: Add `useCallback` and `useMemo` where appropriate.
 
 **What to do:**
+
 - Wrap functions passed as props in `useCallback`
 - Wrap functions used as dependencies in other hooks in `useCallback`
 - Wrap expensive calculations in `useMemo`
@@ -173,33 +180,87 @@ const count = users.length; // Number - no useMemo
 **Checklist for each file:**
 
 **General Structure:**
+
 - [ ] All functions have descriptive comments
 - [ ] All non-exported items are prefixed with `_`
 - [ ] File follows the exact organization structure (imports → public types → internal types → exported functions → internal functions)
 
 **TypeScript Quality:**
+
 - [ ] Zero usage of `any` type anywhere in the file
 - [ ] All React event handlers use proper event types
 - [ ] All Convex functions use `QueryCtx`/`MutationCtx` types
 - [ ] All function parameters and return types are explicitly typed
 
 **React Performance:**
+
 - [ ] Functions passed as props are wrapped in `useCallback`
 - [ ] Functions used as hook dependencies are wrapped in `useCallback`
 - [ ] Expensive calculations are wrapped in `useMemo`
 - [ ] Simple values (strings, booleans, numbers) are NOT memoized
 
+### Step 7: Clean Up Unused Files
+
+**Action**: Identify and remove files that are no longer referenced in the codebase.
+
+**What to do:**
+
+1. **Look at the file name** - understand what the file is supposed to do
+2. **Search for references** - be very careful to ensure that the folder paths are the same as well
+   - Search for the exact file name (without extension)
+   - Search for the full relative path from project root
+   - Search for import statements that reference this file
+   - Check for dynamic imports or require statements
+3. **Delete the file** if it is not used anywhere in the codebase
+
+**Search commands to use:**
+
+```bash
+# Search for file name (without extension)
+grep -r "filename" . --exclude-dir=node_modules --exclude-dir=.git
+
+# Search for full relative path
+grep -r "path/to/filename" . --exclude-dir=node_modules --exclude-dir=.git
+
+# Search for import statements
+grep -r "import.*filename" . --exclude-dir=node_modules --exclude-dir=.git
+grep -r "from.*filename" . --exclude-dir=node_modules --exclude-dir=.git
+
+# Search for dynamic imports
+grep -r "import(" . --exclude-dir=node_modules --exclude-dir=.git | grep "filename"
+```
+
+**Important considerations:**
+
+- Check for files that might be referenced in configuration files (package.json, tsconfig.json, etc.)
+- Verify that the file isn't used in build scripts or deployment configurations
+- Ensure the file isn't referenced in documentation or README files
+- Double-check that the file isn't used in test files or test configurations
+
+**Checklist for unused file cleanup:**
+
+- [ ] File name has been identified and understood
+- [ ] Searched for exact file name references (without extension)
+- [ ] Searched for full relative path references
+- [ ] Searched for import statements referencing this file
+- [ ] Searched for dynamic imports or require statements
+- [ ] Checked configuration files for references
+- [ ] Verified file is not used in build/deployment scripts
+- [ ] Confirmed file is not referenced in documentation
+- [ ] File has been safely deleted (if unused)
+
 ## Complete Example: Before and After
 
 ### Before Cleanup
+
 ```typescript
-import React from 'react';
+import React from "react";
 
 function validateEmail(email: string) {
   return /\S+@\S+\.\S+/.test(email);
 }
 
-export function UserForm({ onSubmit }: UserFormProps) { 
+export function UserForm({ onSubmit }: UserFormProps) {
   const handleSubmit = (data: any) => {
     if (validateEmail(data.email)) {
       onSubmit(data);
@@ -213,10 +274,11 @@ interface UserFormProps {
 }
 ```
 
-### After Cleanup (Following All 6 Steps)
+### After Cleanup (Following All 7 Steps)
+
 ```typescript
 // 1. Imports
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
 // 2. Public interfaces
 export interface UserFormProps {
@@ -237,11 +299,14 @@ export function UserForm({ onSubmit }: UserFormProps) {
   /**
    * Handles form submission with email validation.
    */
-  const handleSubmit = useCallback((data: _FormData) => {
-    if (_validateEmail(data.email)) {
-      onSubmit(data);
-    }
-  }, [onSubmit]);
+  const handleSubmit = useCallback(
+    (data: _FormData) => {
+      if (_validateEmail(data.email)) {
+        onSubmit(data);
+      }
+    },
+    [onSubmit]
+  );
 
   return <form onSubmit={handleSubmit}>...</form>;
 }
@@ -258,8 +323,9 @@ function _validateEmail(email: string): boolean {
 ## Usage Instructions
 
 1. **Select a file** from your git status that needs cleanup
-2. **Work through steps 1-6** in exact order for that file
+2. **Work through steps 1-7** in exact order for that file
 3. **Complete the checklist** in Step 6 before moving to the next file
-4. **Repeat** for each file that needs cleanup
+4. **Perform unused file cleanup** in Step 7 for any files that appear to be unused
+5. **Repeat** for each file that needs cleanup
 
 This step-by-step approach ensures consistent, high-quality code that is maintainable and follows team standards.

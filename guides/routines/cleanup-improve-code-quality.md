@@ -213,6 +213,48 @@ const count = users.length; // Number - no useMemo
    - Check for dynamic imports or require statements
 3. **Delete the file** if it is not used anywhere in the codebase
 
+**CRITICAL: Files to NEVER delete**
+Before proceeding with any file deletion, verify the file is NOT one of these protected types:
+
+**Configuration Files:**
+
+- `package.json`, `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`
+- `tsconfig.json`, `tsconfig.*.json`
+- `next.config.js`, `next.config.ts`, `next.config.mjs`
+- `tailwind.config.js`, `postcss.config.js`, `eslint.config.js`
+- `biome.json`, `.eslintrc.*`, `.prettierrc.*`
+- `vite.config.*`, `webpack.config.*`, `rollup.config.*`
+- `.env*`, `.env.local`, `.env.production`, etc.
+- `nx.json`, `project.json`, `workspace.json`
+
+**Entry Point Files:**
+
+- `index.ts`, `index.tsx`, `index.js`, `index.jsx`
+- `main.ts`, `main.tsx`, `main.js`, `main.jsx`
+- `app.ts`, `app.tsx`, `app.js`, `app.jsx`
+- `server.ts`, `server.tsx`, `server.js`, `server.jsx`
+
+**Generated Files:**
+
+- Files in `_generated/` directories
+- Files in `node_modules/` directories
+- Files in `.next/`, `dist/`, `build/`, `out/` directories
+- Files with `.d.ts` extensions (TypeScript declaration files)
+- Files in `convex/_generated/` directories
+
+**Framework-Specific Files:**
+
+- `page.tsx`, `page.ts`, `page.js`, `page.jsx` (Next.js App Router)
+- `layout.tsx`, `layout.ts`, `layout.js`, `layout.jsx` (Next.js App Router)
+- `loading.tsx`, `loading.ts`, `loading.js`, `loading.jsx` (Next.js App Router)
+- `error.tsx`, `error.ts`, `error.js`, `error.jsx` (Next.js App Router)
+- `not-found.tsx`, `not-found.ts`, `not-found.js`, `not-found.jsx` (Next.js App Router)
+- `route.ts`, `route.tsx`, `route.js`, `route.jsx` (Next.js API routes)
+- `middleware.ts`, `middleware.js` (Next.js middleware)
+- `manifest.ts`, `manifest.js` (PWA manifests)
+- `sitemap.ts`, `sitemap.js` (SEO files)
+- `robots.ts`, `robots.js` (SEO files)
+
 **Search commands to use:**
 
 ```bash
@@ -236,10 +278,12 @@ grep -r "import(" . --exclude-dir=node_modules --exclude-dir=.git | grep "filena
 - Verify that the file isn't used in build scripts or deployment configurations
 - Ensure the file isn't referenced in documentation or README files
 - Double-check that the file isn't used in test files or test configurations
+- **NEVER delete files in protected directories or with protected names**
 
 **Checklist for unused file cleanup:**
 
 - [ ] File name has been identified and understood
+- [ ] **VERIFIED file is NOT a protected configuration, entry point, generated, or framework file**
 - [ ] Searched for exact file name references (without extension)
 - [ ] Searched for full relative path references
 - [ ] Searched for import statements referencing this file
@@ -247,6 +291,7 @@ grep -r "import(" . --exclude-dir=node_modules --exclude-dir=.git | grep "filena
 - [ ] Checked configuration files for references
 - [ ] Verified file is not used in build/deployment scripts
 - [ ] Confirmed file is not referenced in documentation
+- [ ] **Double-checked that file is not in a protected directory or has a protected name**
 - [ ] File has been safely deleted (if unused)
 
 ## Complete Example: Before and After

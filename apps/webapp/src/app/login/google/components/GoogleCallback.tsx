@@ -74,7 +74,8 @@ export const GoogleCallback = ({ code, state, redirectPath = '/app' }: GoogleCal
       toast.success(`Welcome, ${exchangeResult.profile.name}!`);
       setIsProcessing(false);
       router.push(redirectPath);
-    } catch (_error) {
+    } catch (error: unknown) {
+      console.error('Google OAuth callback error:', error);
       router.push('/login');
     }
   }, [code, state, exchangeGoogleCode, loginWithGoogle, router, redirectPath, hasProcessed]);
@@ -121,12 +122,12 @@ function _renderLoadingState(isProcessing: boolean) {
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="space-y-4">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/20">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-gray-900">Authenticating...</h1>
-            <p className="text-gray-600">Completing your Google sign-in...</p>
+            <h1 className="text-2xl font-semibold text-foreground">Authenticating...</h1>
+            <p className="text-muted-foreground">Completing your Google sign-in...</p>
           </div>
         </div>
       </div>

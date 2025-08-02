@@ -177,8 +177,8 @@ function _LoadingState() {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-gray-900">Processing...</h1>
-            <p className="text-gray-600">Completing your authentication...</p>
+            <h1 className="text-2xl font-semibold text-foreground">Processing...</h1>
+            <p className="text-muted-foreground">Completing your authentication...</p>
           </div>
         </div>
       </div>

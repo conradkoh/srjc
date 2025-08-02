@@ -175,7 +175,7 @@ export const AttendanceCopyDialog = ({
           {/* Preview */}
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Preview</h4>
-            <div className="border rounded-md p-3 bg-gray-50 text-sm font-mono whitespace-pre-wrap h-60 overflow-y-auto">
+            <div className="border rounded-md p-3 bg-muted text-sm font-mono whitespace-pre-wrap h-60 overflow-y-auto">
               {generateCopyText()}
             </div>
           </div>

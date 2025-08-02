@@ -11,6 +11,49 @@ This location of the frontend project is in `apps/webapp`.
 - NEVER run the `dev` command to start the dev server unless explicitly told to do so.
 - NEVER run the `build` command to to test the app and prefer to rely on running tests and typechecks instead.
 
+## Dark Mode Guidelines - CRITICAL FOR ALL COMPONENTS
+
+### **Golden Rule: Use Semantic Colors First**
+✅ **Preferred approach** - these automatically adapt:
+- Text: `text-foreground`, `text-muted-foreground`
+- Backgrounds: `bg-background`, `bg-card`, `bg-muted`, `bg-accent`
+- Interactive: `hover:bg-accent/50`
+- Borders: `border-border`, `border-input`
+
+❌ **Avoid these** - they break in dark mode:
+- `text-black`, `bg-white`, `text-gray-900`, `bg-gray-50`
+
+### **When You Need Brand/Status Colors**
+✅ **Always include dark variants**:
+```tsx
+// Status backgrounds
+bg-red-50 dark:bg-red-950/20
+bg-green-50 dark:bg-green-950/20
+
+// Status text
+text-red-600 dark:text-red-400
+text-green-600 dark:text-green-400
+
+// Borders
+border-red-200 dark:border-red-800
+```
+
+❌ **Never use single-mode colors**:
+```tsx
+bg-red-50  // Will cause white text on light red in dark mode
+```
+
+### **Quick Reference**
+| Purpose | Use This | Not This |
+|---------|----------|----------|
+| Primary text | `text-foreground` | `text-black` |
+| Secondary text | `text-muted-foreground` | `text-gray-600` |
+| Card background | `bg-card` | `bg-white` |
+| Hover states | `hover:bg-accent/50` | `hover:bg-gray-50` |
+
+### **Testing Checklist**
+Test each component in: light mode → dark mode → system mode
+
 ## UI Design - Components & Icons
 
 This project uses the following libraries

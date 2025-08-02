@@ -1,71 +1,38 @@
 # Code Quality Cleanup Routine
 
-## Overview
-
-This document provides a systematic step-by-step approach to improving code quality for individual TypeScript/JavaScript files in React, Next.js, and Convex backend projects. Follow these steps in order for each file you're cleaning up.
-
 ## Core Principles
 
-1. **Readability First**: Code must tell a story from top to bottom
-2. **Intentional Organization**: Most important elements must be immediately visible
-3. **Clear Boundaries**: Internal vs. external APIs must be obvious
-4. **Self-Documenting**: Functions and interfaces must explain their purpose
+1. **Readability First**: Code MUST tell a story from top to bottom
+2. **Intentional Organization**: Most important elements MUST be immediately visible
+3. **Clear Boundaries**: Internal vs. external APIs MUST be obvious
+4. **Self-Documenting**: Functions and interfaces MUST explain their purpose
 
-## Step-by-Step File Cleanup Process
+## Quick Start
 
-### Step 0: Identify Target Files
+**Target files**: `git status --porcelain | grep -E '\.(ts|tsx|js|jsx)$' | awk '{print $2}'`
 
-Target only modified TypeScript/JavaScript files:
+**For each file, follow steps 1-8 in order:**
 
-```bash
-git status --porcelain | grep -E '\.(ts|tsx|js|jsx)$' | awk '{print $2}'
-```
+## Step-by-Step Process
 
-**For each file, follow steps 1-7 in order:**
+### Step 1: Add Function Comments
 
-### Step 1: Add Comments to All Functions
+**MUST do:**
 
-**Action**: Add a descriptive comment above every function (exported and internal).
+- Add descriptive comment above EVERY function AND exported interface/type
+- Use present tense ("Creates", "Validates", "Displays", "Represents", "Defines")
+- Describe WHAT it does, not HOW
+- NEVER add process comments (e.g., "// 2. Public interfaces") in code output
+- SKIP this step entirely if file has no functions or exported interfaces/types
 
-**What to do:**
+### Step 2: Prefix Internal Elements
 
-- Place a comment directly above each function declaration
-- Describe what the function does, not how it does it
-- Use present tense ("Creates", "Validates", "Displays")
-- Note: Internal functions should already have `_` prefix (see Step 2)
+**MUST do:**
 
-```typescript
-/**
- * Creates a new user account with the provided information.
- */
-export async function createUser(userData: CreateUserRequest): Promise<string> {
-  // Implementation
-}
-
-/**
- * Validates email format using regex pattern.
- */
-function _validateEmail(email: string): boolean {
-  // Implementation
-}
-
-/**
- * Displays a user's profile information with edit capabilities.
- */
-export function UserProfile({ userId }: UserProfileProps) {
-  // Implementation
-}
-```
-
-### Step 2: Prefix Internal Elements with Underscore
-
-**Action**: Add `_` prefix to all non-exported functions, interfaces, types, and constants.
-
-**What to do:**
-
-- Scan through the file for any function, interface, type, or constant that is NOT exported
-- Add `_` prefix to the name
-- Update all references to use the new prefixed name
+- Add `_` prefix to ALL non-exported items
+- Update ALL references to use new prefixed names
+- NEVER add process comments (e.g., "// 2. Prefix internal elements") in code output
+- SKIP this step entirely if file has no internal elements
 
 ```typescript
 // Functions
@@ -79,15 +46,22 @@ type _ValidationResult = {};
 const _DEFAULT_TIMEOUT = 5000;
 ```
 
-### Step 3: Eliminate All `any` Types
+### Step 3: Eliminate `any` Types
 
-**Action**: Replace every instance of `any` with proper types.
+**NEVER use:**
 
-**What to do:**
+- `any` type anywhere in the file
 
-- Search for all occurrences of `any` in the file
-- Replace with specific interfaces, types, or `unknown` with type guards
-- Use proper React event types and Convex context types
+**MUST use:**
+
+- Specific interfaces and types
+- Proper React event types: `React.MouseEvent<HTMLButtonElement>`
+- Proper Convex types: `QueryCtx`, `MutationCtx`
+
+**NEVER add:**
+
+- Process comments (e.g., "// 3. Eliminate any types") in code output
+- SKIP this step entirely if file has no `any` types
 
 ```typescript
 // ❌ Replace this
@@ -100,59 +74,78 @@ interface DataItem {
 }
 function processData(data: DataItem[]): number[] {}
 
-// ✅ Use proper event types
+// ✅ Proper event types
 function handleClick(event: React.MouseEvent<HTMLButtonElement>) {}
 
-// ✅ Use proper Convex context types
+// ✅ Proper Convex types
 import { type MutationCtx, type QueryCtx } from "./_generated/server";
 ```
 
 ### Step 4: Reorganize File Structure
 
-**Action**: Rearrange the entire file contents in this exact order.
+**MUST follow this exact order:**
 
-**What to do:**
+1. Imports (external first, then internal)
+2. Public interfaces and types
+3. Internal interfaces and types (prefixed with `_`)
+4. Exported functions/components
+5. Internal helper functions (at bottom)
 
-1. Move all imports to the top (external libraries first, then internal imports)
-2. Move all exported interfaces and types to the top (after imports)
-3. Move all internal interfaces and types (prefixed with `_`) next
-4. Move all exported functions/components next
-5. Move all internal helper functions to the bottom
+**IMPORTANT:**
 
-```typescript
-// 1. Imports (external first, then internal)
-import React from "react";
-import { api } from "@/convex/_generated/api";
+- NEVER add section comments (e.g., "// 1. Imports", "// 2. Public interfaces") in code output
+- ONLY reorganize if file structure is incorrect
+- SKIP this step entirely if file already follows correct structure```typescript
+  import React from "react";
+  import { api } from "@/convex/\_generated/api";
 
-// 2. Public interfaces and types
-export interface UserProfileProps {}
-export type UserRole = "admin" | "user" | "guest";
+/\*\*
 
-// 3. Internal interfaces and types (prefixed with _)
-interface _UserState {}
-type _ValidationResult = {};
+- Props for user profile component.
+  \*/
+  export interface UserProfileProps {}
 
-// 4. Main exported functions/components
-export function UserProfile({ userId }: UserProfileProps) {}
-export async function createUser(
-  userData: CreateUserRequest
-): Promise<string> {}
+/\*\*
 
-// 5. Internal helper functions (at bottom)
-function _validateUserData(userData: CreateUserRequest): _ValidationResult {}
-function _formatDisplayName(firstName: string, lastName: string): string {}
-```
+- Available user roles in the system.
+  \*/
+  export type UserRole = "admin" | "user" | "guest";
 
-### Step 5: Apply React Performance Optimizations
+interface \_UserState {}
+type \_ValidationResult = {};
 
-**Action**: Add `useCallback` and `useMemo` where appropriate.
+/\*\*
 
-**What to do:**
+- Displays user profile information and settings.
+  \*/
+  export function UserProfile({ userId }: UserProfileProps) {}
 
-- Wrap functions passed as props in `useCallback`
-- Wrap functions used as dependencies in other hooks in `useCallback`
-- Wrap expensive calculations in `useMemo`
-- **Do NOT** wrap primitive values or simple operations
+/\*\*
+
+- Validates user data against business rules.
+  \*/
+  function \_validateUserData(userData: CreateUserRequest): \_ValidationResult {}
+
+````
+
+### Step 5: React Performance
+
+**MUST use `useCallback` for:**
+
+- Functions passed as props
+- Functions used as hook dependencies
+
+**MUST use `useMemo` for:**
+
+- Expensive calculations only
+
+**NEVER memoize:**
+
+- Primitive values (strings, booleans, numbers)
+
+**IMPORTANT:**
+- SKIP this step entirely for non-React files (.ts files without JSX)
+- NEVER add process comments in code output
 
 ```typescript
 // ✅ Use useCallback for functions passed as props
@@ -170,99 +163,33 @@ const analytics = useMemo(() => {
 // ❌ Don't memoize these
 const displayName = `${user.firstName} ${user.lastName}`; // String - no useMemo
 const isAdult = user.age >= 18; // Boolean - no useMemo
-const count = users.length; // Number - no useMemo
-```
+````
 
-### Step 6: Final Quality Check
+### Step 6: Quality Check
 
-**Action**: Verify the file meets all quality standards.
+**MUST verify:**
 
-**Checklist for each file:**
-
-**General Structure:**
-
-- [ ] All functions have descriptive comments
-- [ ] All non-exported items are prefixed with `_`
-- [ ] File follows the exact organization structure (imports → public types → internal types → exported functions → internal functions)
-
-**TypeScript Quality:**
-
-- [ ] Zero usage of `any` type anywhere in the file
-- [ ] All React event handlers use proper event types
-- [ ] All Convex functions use `QueryCtx`/`MutationCtx` types
-- [ ] All function parameters and return types are explicitly typed
-
-**React Performance:**
-
-- [ ] Functions passed as props are wrapped in `useCallback`
-- [ ] Functions used as hook dependencies are wrapped in `useCallback`
-- [ ] Expensive calculations are wrapped in `useMemo`
-- [ ] Simple values (strings, booleans, numbers) are NOT memoized
+- [ ] All functions have comments
+- [ ] All non-exported items prefixed with `_`
+- [ ] File follows exact organization structure
+- [ ] Zero `any` types exist
+- [ ] All event handlers use proper types
+- [ ] Functions as props use `useCallback`
 
 ### Step 7: Clean Up Unused Files
 
-**Action**: Identify and remove files that are no longer referenced in the codebase.
+**NEVER delete:**
 
-**What to do:**
+- Configuration files (`package.json`, `tsconfig.json`, etc.)
+- Entry points (`index.ts`, `page.tsx`, `layout.tsx`, etc.)
+- Generated files (`_generated/`, `.d.ts`)
+- Framework files (`middleware.ts`, `manifest.ts`, etc.)
 
-1. **Look at the file name** - understand what the file is supposed to do
-2. **Search for references** - be very careful to ensure that the folder paths are the same as well
-   - Search for the exact file name (without extension)
-   - Search for the full relative path from project root
-   - Search for import statements that reference this file
-   - Check for dynamic imports or require statements
-3. **Delete the file** if it is not used anywhere in the codebase
-
-**CRITICAL: Files to NEVER delete**
-Before proceeding with any file deletion, verify the file is NOT one of these protected types:
-
-**Configuration Files:**
-
-- `package.json`, `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`
-- `tsconfig.json`, `tsconfig.*.json`
-- `next.config.js`, `next.config.ts`, `next.config.mjs`
-- `tailwind.config.js`, `postcss.config.js`, `eslint.config.js`
-- `biome.json`, `.eslintrc.*`, `.prettierrc.*`
-- `vite.config.*`, `webpack.config.*`, `rollup.config.*`
-- `.env*`, `.env.local`, `.env.production`, etc.
-- `nx.json`, `project.json`, `workspace.json`
-
-**Entry Point Files:**
-
-- `index.ts`, `index.tsx`, `index.js`, `index.jsx`
-- `main.ts`, `main.tsx`, `main.js`, `main.jsx`
-- `app.ts`, `app.tsx`, `app.js`, `app.jsx`
-- `server.ts`, `server.tsx`, `server.js`, `server.jsx`
-
-**Generated Files:**
-
-- Files in `_generated/` directories
-- Files in `node_modules/` directories
-- Files in `.next/`, `dist/`, `build/`, `out/` directories
-- Files with `.d.ts` extensions (TypeScript declaration files)
-- Files in `convex/_generated/` directories
-
-**Framework-Specific Files:**
-
-- `page.tsx`, `page.ts`, `page.js`, `page.jsx` (Next.js App Router)
-- `layout.tsx`, `layout.ts`, `layout.js`, `layout.jsx` (Next.js App Router)
-- `loading.tsx`, `loading.ts`, `loading.js`, `loading.jsx` (Next.js App Router)
-- `error.tsx`, `error.ts`, `error.js`, `error.jsx` (Next.js App Router)
-- `not-found.tsx`, `not-found.ts`, `not-found.js`, `not-found.jsx` (Next.js App Router)
-- `route.ts`, `route.tsx`, `route.js`, `route.jsx` (Next.js API routes)
-- `middleware.ts`, `middleware.js` (Next.js middleware)
-- `manifest.ts`, `manifest.js` (PWA manifests)
-- `sitemap.ts`, `sitemap.js` (SEO files)
-- `robots.ts`, `robots.js` (SEO files)
-
-**Search commands to use:**
+**Search commands:**
 
 ```bash
 # Search for file name (without extension)
 grep -r "filename" . --exclude-dir=node_modules --exclude-dir=.git
-
-# Search for full relative path
-grep -r "path/to/filename" . --exclude-dir=node_modules --exclude-dir=.git
 
 # Search for import statements
 grep -r "import.*filename" . --exclude-dir=node_modules --exclude-dir=.git
@@ -272,31 +199,39 @@ grep -r "from.*filename" . --exclude-dir=node_modules --exclude-dir=.git
 grep -r "import(" . --exclude-dir=node_modules --exclude-dir=.git | grep "filename"
 ```
 
-**Important considerations:**
+**MUST verify before deletion:**
 
-- Check for files that might be referenced in configuration files (package.json, tsconfig.json, etc.)
-- Verify that the file isn't used in build scripts or deployment configurations
-- Ensure the file isn't referenced in documentation or README files
-- Double-check that the file isn't used in test files or test configurations
-- **NEVER delete files in protected directories or with protected names**
+- [ ] Search for file name references
+- [ ] Search for import statements
+- [ ] Check configuration files
+- [ ] Verify not in protected directories
 
-**Checklist for unused file cleanup:**
+### Step 8: Design Review
 
-- [ ] File name has been identified and understood
-- [ ] **VERIFIED file is NOT a protected configuration, entry point, generated, or framework file**
-- [ ] Searched for exact file name references (without extension)
-- [ ] Searched for full relative path references
-- [ ] Searched for import statements referencing this file
-- [ ] Searched for dynamic imports or require statements
-- [ ] Checked configuration files for references
-- [ ] Verified file is not used in build/deployment scripts
-- [ ] Confirmed file is not referenced in documentation
-- [ ] **Double-checked that file is not in a protected directory or has a protected name**
-- [ ] File has been safely deleted (if unused)
+**Component Design MUST have:**
 
-## Complete Example: Before and After
+- [ ] Single, clear responsibility
+- [ ] Well-named, typed, minimal props
+- [ ] Proper state scoping
+- [ ] Error handling
+- [ ] Accessibility support
 
-### Before Cleanup
+**API Design MUST have:**
+
+- [ ] Clear function names
+- [ ] Required params first, optional last
+- [ ] Predictable return types
+- [ ] Consistent error handling
+
+**Dark Mode MUST use:**
+
+- [ ] Semantic colors (`text-foreground`, `bg-card`)
+- [ ] Dark variants for status colors (`bg-red-50 dark:bg-red-950/20`)
+- [ ] NEVER hardcoded colors (`text-black`, `bg-white`)
+
+## Complete Example
+
+### ❌ Before Cleanup
 
 ```typescript
 import React from "react";
@@ -319,24 +254,23 @@ interface UserFormProps {
 }
 ```
 
-### After Cleanup (Following All 7 Steps)
+### ✅ After Cleanup (Steps 1-8)
 
 ```typescript
-// 1. Imports
 import React, { useCallback } from "react";
 
-// 2. Public interfaces
+/**
+ * Props for user registration form component.
+ */
 export interface UserFormProps {
   onSubmit: (data: FormData) => void;
 }
 
-// 3. Internal types
 interface _FormData {
   email: string;
   name: string;
 }
 
-// 4. Exported components
 /**
  * User registration form with validation and submission handling.
  */
@@ -356,7 +290,6 @@ export function UserForm({ onSubmit }: UserFormProps) {
   return <form onSubmit={handleSubmit}>...</form>;
 }
 
-// 5. Internal helper functions
 /**
  * Validates email format using regex pattern.
  */
@@ -365,12 +298,80 @@ function _validateEmail(email: string): boolean {
 }
 ```
 
-## Usage Instructions
+## Usage
 
-1. **Select a file** from your git status that needs cleanup
-2. **Work through steps 1-7** in exact order for that file
-3. **Complete the checklist** in Step 6 before moving to the next file
-4. **Perform unused file cleanup** in Step 7 for any files that appear to be unused
-5. **Repeat** for each file that needs cleanup
+### 1. Initialize Progress Tracking
 
-This step-by-step approach ensures consistent, high-quality code that is maintainable and follows team standards.
+```bash
+# Get list of modified files
+git status --porcelain | grep -E '\.(ts|tsx|js|jsx)$' | awk '{print $2}' > modified-files.txt
+```
+
+Create `cleanup-progress.md` with file list and checklists:
+
+```markdown
+# Code Quality Cleanup Progress
+
+## Files to Process
+
+- [ ] file1.tsx
+- [ ] file2.ts
+- [ ] file3.tsx
+
+## file1.tsx
+
+- [ ] Step 1: Add function comments
+- [ ] Step 2: Prefix internal elements
+- [ ] Step 3: Eliminate any types
+- [ ] Step 4: Reorganize file structure
+- [ ] Step 5: React performance
+- [ ] Step 6: Quality check
+- [ ] Step 7: Clean up unused files
+- [ ] Step 8: Design review
+
+## file2.ts
+
+- [ ] Step 1: Add function comments
+- [ ] Step 2: Prefix internal elements
+- [ ] Step 3: Eliminate any types
+- [ ] Step 4: Reorganize file structure
+- [ ] Step 5: React performance (N/A - not React)
+- [ ] Step 6: Quality check
+- [ ] Step 7: Clean up unused files
+- [ ] Step 8: Design review
+```
+
+### 2. Execute Cleanup Process
+
+**For each file in cleanup-progress.md:**
+
+1. **Work through steps 1-8** in order
+2. **Update progress** after each completed step
+3. **Mark N/A** for non-applicable steps (e.g., React performance for non-React files)
+4. **Complete all steps** before moving to next file
+
+### 3. Progress Updates
+
+After completing each step:
+
+```bash
+# Update the checkbox in cleanup-progress.md
+- [x] Step 1: Add function comments ✓
+```
+
+### 4. Completion
+
+Continue until all files show:
+
+```markdown
+## file1.tsx ✅ COMPLETE
+
+- [x] Step 1: Add function comments ✓
+- [x] Step 2: Prefix internal elements ✓
+- [x] Step 3: Eliminate any types ✓
+- [x] Step 4: Reorganize file structure ✓
+- [x] Step 5: React performance ✓
+- [x] Step 6: Quality check ✓
+- [x] Step 7: Clean up unused files ✓
+- [x] Step 8: Design review ✓
+```

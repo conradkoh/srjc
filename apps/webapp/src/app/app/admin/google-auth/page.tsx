@@ -606,7 +606,8 @@ async function _copyToClipboard(text: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
-  } catch (_error) {
+  } catch (error: unknown) {
+    console.error('Failed to copy to clipboard:', error);
     toast.error('Failed to copy to clipboard');
   }
 }
@@ -638,7 +639,9 @@ function _getClientIdValidationClass(clientId: string): string {
     return '';
   }
   const validation = _validateClientIdFormat(clientId);
-  return validation.isValid ? 'border-green-500' : 'border-amber-500';
+  return validation.isValid
+    ? 'border-green-500 dark:border-green-400'
+    : 'border-amber-500 dark:border-amber-400';
 }
 
 /**
@@ -738,7 +741,8 @@ async function _handleToggleEnabled(
     await toggleEnabled({ enabled: newEnabled });
     setEnabled(newEnabled);
     toast.success(`Google Auth ${newEnabled ? 'enabled' : 'disabled'} successfully`);
-  } catch (_error) {
+  } catch (error: unknown) {
+    console.error('Failed to toggle Google Auth:', error);
     toast.error('Failed to toggle Google Auth. Please try again.');
   }
 }
@@ -810,7 +814,8 @@ async function _handleSave(params: _SaveConfigParams): Promise<void> {
 
     toast.success('Google Auth configuration saved successfully');
     setIsConfigured(true);
-  } catch (_error) {
+  } catch (error: unknown) {
+    console.error('Failed to save Google Auth configuration:', error);
     toast.error('Failed to save configuration. Please try again.');
   } finally {
     setIsFormLoading(false);
@@ -853,7 +858,8 @@ async function _handleTest(
     } else {
       toast.error(`❌ Configuration failed: ${result.message}`);
     }
-  } catch (_error) {
+  } catch (error: unknown) {
+    console.error('Failed to test Google Auth configuration:', error);
     toast.error('Failed to test configuration. Please try again.');
   }
 }
@@ -884,7 +890,8 @@ async function _handleReset(
     setClientId('');
     setClientSecret('');
     setIsConfigured(false);
-  } catch (_error) {
+  } catch (error: unknown) {
+    console.error('Failed to reset Google Auth configuration:', error);
     toast.error('Failed to reset configuration. Please try again.');
   }
 }

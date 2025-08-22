@@ -8,7 +8,7 @@
     "dev": "nx run-many --target=dev --projects=@workspace/webapp,@workspace/backend --parallel",
     "setup": "node scripts/setup.js",
     "lint": "biome check .",
-    "lint:fix": "biome check --apply .",
+    "lint:fix": "biome check --write .",
     "format": "biome format .",
     "format:fix": "biome format --write .",
     "typecheck": "nx run-many --target=typecheck --projects=@workspace/webapp,@workspace/backend",
@@ -24,18 +24,26 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.1.2",
     "@nx/workspace": "^20.6.1",
+    "@types/node": "^20.17.24",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "nx": "^20.6.1",
-    "typescript": "^5.3.3",
-    "@types/node": "^20.17.24"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.1.8"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "nx", "sharp"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "nx",
+      "sharp"
+    ],
+    "overrides": {
+      "@radix-ui/react-dismissable-layer": "1.1.10"
+    }
   }
 }

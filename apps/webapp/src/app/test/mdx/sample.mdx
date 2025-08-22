@@ -1,0 +1,50 @@
+# Sample MDX Component
+
+This is a **standalone MDX file** that can be imported as a component.
+
+## Features Demonstrated
+
+- Standard markdown syntax
+- **Bold** and *italic* text
+- Lists and links
+- Code blocks with syntax highlighting
+
+### Code Example
+
+```typescript
+// TypeScript interface example
+interface MDXProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+// Component example
+export function MDXWrapper({ children, className }: MDXProps) {
+  return <div className={className}>{children}</div>;
+}
+```
+
+### Lists
+
+1. First ordered item
+2. Second ordered item
+3. Third ordered item
+
+Unordered list:
+- Bullet point one
+- Bullet point two
+- Bullet point three
+
+### Links and Quotes
+
+> This blockquote demonstrates how semantic colors work with MDX content, automatically adapting to light and dark themes.
+
+Visit the [home page](/) to see more examples.
+
+### Inline Elements
+
+Here's some text with `inline code` and **bold formatting**.
+
+---
+
+*This MDX file can be imported and used as a React component anywhere in the application.*

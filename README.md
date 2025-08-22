@@ -30,6 +30,35 @@ If you prefer to set up manually:
    ```
 3. Run `pnpm dev` in the root directory to start both services
 
+## System Administration Setup
+
+To create a system administrator:
+
+1. **Login anonymously** via the login page
+2. **Set admin privileges** in [Convex Dashboard](https://dashboard.convex.dev):
+   - Go to Data > `users` table
+   - Find your user record and set `accessLevel` to `"system_admin"`
+3. **Access admin dashboard** by clicking your username → "System Admin"
+
+System admins can configure Google OAuth, manage authentication providers, and access system settings.
+
+## Google Auth Setup
+
+To enable Google OAuth authentication:
+
+1. **Configure Google OAuth** in your app's admin dashboard:
+   - Login with your system admin account
+   - Go to your username → "System Admin" → "Google Auth Config"
+   - Follow the instructions to set up Google OAuth credentials
+   
+2. **Transfer admin role to Google account** (Recommended):
+   - After Google Auth is configured, sign in with your Google account
+   - In [Convex Dashboard](https://dashboard.convex.dev), go to Data > `users` table
+   - Find your Google account user record and set `accessLevel` to `"system_admin"`
+   - Remove the `system_admin` access level from the temporary anonymous account
+
+This ensures your system admin access is tied to a verified Google account for better security.
+
 ## Project Structure
 
 - `apps/webapp`: The frontend NextJS application
@@ -82,7 +111,7 @@ To deploy your Convex backend to production:
 
 1. Generate a deployment key from the Convex dashboard:
    - Go to your project in the [Convex dashboard](https://dashboard.convex.dev)
-   - Navigate to Settings > API Keys
+   - Navigate to Settings > URL & Deploy Key
    - Create a new deployment key
 
 2. Add the deployment key to GitHub Secrets:
@@ -95,6 +124,26 @@ To deploy your Convex backend to production:
 3. The GitHub Action workflow included in this template will handle deployment of your Convex backend automatically when you push to the main branch.
 
 This setup allows for secure automated deployments of your Convex functions and schema without exposing your credentials.
+
+### Vercel Frontend Deployment
+
+To deploy your NextJS frontend to Vercel:
+
+1. Navigate to your Convex dashboard:
+   - Go to [Convex dashboard](https://dashboard.convex.dev)
+   - Navigate to Settings > URL & Deploy Key
+   - Copy the Deployment URL
+
+2. Set up the Vercel deployment
+   - Go to the Vercel dashboard
+   - Navigate to Project Settings > Build and Deployment > Root Directory
+      - Set the Root Directory to `apps/webapp`
+   - Navigate to Project Settings > Environment Variables
+      - Add a new variable:
+      - Name: `NEXT_PUBLIC_CONVEX_URL`
+      - Value: Paste the Deployment URL you copied from Convex
+
+3. Deploy your NextJS application to Vercel as usual.
 
 <br/>
 

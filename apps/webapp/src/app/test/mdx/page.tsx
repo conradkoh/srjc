@@ -24,7 +24,7 @@ export default function MdxTestPage() {
         <div>
           <h2 className="text-xl font-semibold mb-4 text-foreground">Real MDX File (sample.mdx)</h2>
           <div className="border border-border rounded-lg p-6 bg-card">
-            <div className="prose max-w-none">
+            <div className="mdx-content">
               <SampleMDX />
             </div>
           </div>
@@ -55,15 +55,15 @@ export default function MdxTestPage() {
           <h2 className="text-xl font-semibold mb-4 text-foreground">Layout Comparison</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium mb-2 text-foreground">Without Layout</h3>
+              <h3 className="text-lg font-medium mb-2 text-foreground">Direct MDX</h3>
               <div className="border border-border rounded-lg p-4 bg-card">
-                <div className="prose prose-sm max-w-none">
+                <div className="mdx-content">
                   <SampleMDX />
                 </div>
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-2 text-foreground">With Layout</h3>
+              <h3 className="text-lg font-medium mb-2 text-foreground">With Layout Wrapper</h3>
               <div className="border border-border rounded-lg bg-card">
                 <MdxLayout>
                   <SampleMDX />
@@ -101,7 +101,7 @@ export default function MdxTestPage() {
  */
 function SampleMDXContent() {
   return (
-    <div className="prose prose-sm max-w-none">
+    <div className="mdx-content">
       <h1>Basic MDX Content</h1>
       <p>
         This is <strong>basic MDX content</strong> with <em>formatting</em>.
@@ -112,9 +112,13 @@ function SampleMDXContent() {
         <li>List item three</li>
       </ul>
       <p>
-        <a href="/" className="text-primary hover:bg-accent/50 rounded px-1 py-0.5">
-          Link to home
-        </a>
+        <a href="/">Link to home</a>
+      </p>
+      <blockquote>
+        <p>This is a clean blockquote without italic styling, following GitHub's approach.</p>
+      </blockquote>
+      <p>
+        Here's some <code>inline code</code> that looks clean and readable.
       </p>
     </div>
   );
@@ -191,17 +195,18 @@ function _CompactMDXContent() {
  */
 function SemanticColorsMDX() {
   return (
-    <div className="prose prose-sm max-w-none">
-      <p className="text-foreground">Primary text</p>
-      <p className="text-muted-foreground">Muted text</p>
+    <div className="mdx-content">
+      <p>Primary text with semantic colors</p>
+      <p className="text-muted-foreground">Muted secondary text</p>
       <p>
-        <a href="/" className="text-primary hover:bg-accent/50 rounded px-1">
-          Primary link
-        </a>
+        <a href="/">Clean primary link</a>
       </p>
-      <code className="relative rounded bg-muted px-2 py-1 font-mono text-xs text-foreground">
-        code
-      </code>
+      <p>
+        <code>inline code</code> with proper contrast
+      </p>
+      <blockquote>
+        <p>Clean blockquote styling</p>
+      </blockquote>
     </div>
   );
 }

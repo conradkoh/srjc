@@ -1,13 +1,14 @@
 # Sample MDX Component
 
-This is a **standalone MDX file** that can be imported as a component.
+This is a **standalone MDX file** that demonstrates clean, GitHub-style markdown rendering.
 
 ## Features Demonstrated
 
-- Standard markdown syntax
-- **Bold** and *italic* text
-- Lists and links
-- Code blocks with syntax highlighting
+- Clean typography with proper spacing
+- **Bold** and *italic* text without over-styling
+- Lists with consistent spacing
+- Code blocks with clean syntax highlighting
+- Professional blockquotes
 
 ### Code Example
 
@@ -18,33 +19,44 @@ interface MDXProps {
   className?: string;
 }
 
-// Component example
+// Component example with clean formatting
 export function MDXWrapper({ children, className }: MDXProps) {
   return <div className={className}>{children}</div>;
 }
+
+// No more weird bold text in code blocks!
+const cleanCode = "properly formatted";
 ```
 
 ### Lists
 
-1. First ordered item
+1. First ordered item with proper spacing
 2. Second ordered item
 3. Third ordered item
 
 Unordered list:
-- Bullet point one
-- Bullet point two
-- Bullet point three
+- Clean bullet point one
+- Clean bullet point two  
+- Clean bullet point three
 
 ### Links and Quotes
 
-> This blockquote demonstrates how semantic colors work with MDX content, automatically adapting to light and dark themes.
+> This blockquote demonstrates clean styling without italic text, following GitHub's modern approach. It has a subtle background and clean border styling.
 
-Visit the [home page](/) to see more examples.
+Visit the [home page](/) to see more examples with clean link styling.
 
 ### Inline Elements
 
-Here's some text with `inline code` and **bold formatting**.
+Here's some text with `inline code` that's not bold and **bold formatting** that's appropriately weighted.
+
+### Tables
+
+| Feature      | Before       | After         |
+| ------------ | ------------ | ------------- |
+| Code blocks  | Bold text    | Clean text    |
+| Blockquotes  | Italic       | Clean         |
+| Typography   | Inconsistent | GitHub-style  |
 
 ---
 
-*This MDX file can be imported and used as a React component anywhere in the application.*
+*This MDX file showcases the improved styling with clean, modern typography that follows GitHub's markdown conventions.*

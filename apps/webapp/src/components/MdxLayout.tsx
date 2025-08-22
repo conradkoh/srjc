@@ -8,12 +8,13 @@ export interface MdxLayoutProps {
 }
 
 /**
- * Provides consistent layout styling for MDX documentation pages.
+ * Provides consistent GitHub-style layout for MDX documentation pages.
+ * Uses semantic colors and spacing that work perfectly with our custom MDX components.
  */
 export default function MdxLayout({ children }: MdxLayoutProps) {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <article className="prose prose-lg dark:prose-invert max-w-none">{children}</article>
+    <div className="mx-auto max-w-4xl px-6 py-8">
+      <article className="mdx-content space-y-0">{children}</article>
     </div>
   );
 }

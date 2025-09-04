@@ -18,5 +18,8 @@
   },
   "affected": {
     "defaultBase": "main"
+  },
+  "tui": {
+    "enabled": false
   }
 }

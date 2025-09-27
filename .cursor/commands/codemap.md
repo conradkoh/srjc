@@ -60,7 +60,6 @@ A codemap is an index that shows a map to all relevant files for a given feature
 
 - **MUST use**: TypeScript interfaces even for non-TypeScript implementations
 - **Purpose**: Provide precision in expressing intent and tie related components together
-- **Naming**: Consistent `I[Name]` convention across all interfaces
 - **Scope**: ALL data structures, parameters, and return types
 
 ## Scope Guidelines
@@ -69,6 +68,35 @@ A codemap is an index that shows a map to all relevant files for a given feature
 - **Focused**: NEVER mix multiple unrelated features in one codemap
 - **Complete**: MUST include ALL files necessary for the specific flow to function
 - **Minimal**: SHOULD exclude files not directly related to the flow
+
+## Scope Discipline
+
+### User Request Boundaries
+
+- **MUST**: Implement only what the user explicitly requested
+- **MUST**: Ask before adding related features not mentioned in the request
+- **NEVER**: Assume additional integrations are wanted without explicit user direction
+- **MAY**: Mention related opportunities in a separate "Future Enhancements" section
+
+### Feature Inference Rules
+
+- **MUST**: Distinguish between "required for functionality" vs "nice to have patterns"
+- **MUST**: When in doubt about scope, ask the user for clarification before proceeding
+- **SHOULD**: Focus on the minimal viable implementation that satisfies the request
+- **NEVER**: Add features based solely on existing codebase patterns without user confirmation
+
+### Implementation Boundaries
+
+- **Required**: Features explicitly mentioned in user request
+- **Required**: Integrations necessary for basic functionality (error handling, navigation)
+- **Optional**: Pattern consistency that wasn't explicitly requested
+- **Optional**: Additional access methods not mentioned in the request
+
+### When to Expand Scope
+
+- **MUST ask user first**: Before adding features not explicitly requested
+- **MAY suggest**: Additional integrations in a separate "Future Enhancements" section
+- **NEVER assume**: That following all existing patterns is required
 
 ## Language Standards
 
@@ -102,6 +130,10 @@ A codemap is an index that shows a map to all relevant files for a given feature
 **Actions for New Feature**:
 
 - Copy template to new codemap file following naming convention
+- **Scope Validation**: Confirm implementation scope with user before proceeding:
+  - What specific access methods were requested?
+  - Are there existing patterns that MUST be followed vs. patterns that are optional?
+  - Should additional integrations be included or proposed separately?
 - Define data model and key architectural decisions
 - Plan file locations and structure across all application layers
 - Identify core files that need creation/modification
@@ -109,6 +141,7 @@ A codemap is an index that shows a map to all relevant files for a given feature
 
 **Actions for Existing Feature (No Codemap)**:
 
+- **Scope Validation**: Confirm what modifications are actually requested before proceeding
 - Analyze existing codebase to identify all files related to the feature
 - Document current implementation patterns and data flow
 - Create codemap reflecting actual implementation state
@@ -145,6 +178,5 @@ A codemap is an index that shows a map to all relevant files for a given feature
 2. File paths MUST be accurate and up-to-date relative to project root
 3. Contracts MUST match actual implementation with proper TypeScript interfaces
 4. Language MUST follow specified standards (MUST/SHOULD/MAY/NEVER)
-5. Function interfaces MUST use consistent `I[Name]` naming convention
-6. Updates MUST be made when feature files change
-7. Sequence diagrams MUST demonstrate complete flow between all layers
+5. Updates MUST be made when feature files change
+6. Sequence diagrams MUST demonstrate complete flow between all layers

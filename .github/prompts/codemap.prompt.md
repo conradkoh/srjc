@@ -8,19 +8,36 @@ mode: agent
 
 A codemap is an index that shows a map to all relevant files for a given feature. It serves as the single source of truth for understanding how a feature is implemented across the codebase.
 
+A projectmap is a high-level architectural overview that documents the entire project's structure, technology stack, and organizational patterns. Unlike codemaps which focus on specific features, a projectmap provides the foundational context for understanding the overall system architecture.
+
 ## File Requirements
+
+### Codemaps
 
 1. **Location**: All codemaps MUST be stored in `$projectroot/codemaps/` folder
 2. **Naming**: Filename MUST follow pattern `$featurename.codemap.md`
 3. **Format**: MUST be markdown format with structured sections
 4. **Template**: MUST follow structure defined in `codemaps/templates/template.codemap.md`
 
+### Projectmap
+
+1. **Location**: MUST be stored as `$projectroot/codemaps/projectmap.md`
+2. **Purpose**: Provides architectural overview and project structure documentation
+3. **Format**: MUST be markdown format with structured sections
+4. **Template**: MUST follow structure defined in `codemaps/templates/template.projectmap.md`
+5. **Scope**: MUST cover entire project architecture, not individual features
+6. **Maintenance**: MUST be updated when project structure or tech stack changes
+
 ## File Locations
 
-- **Template**: `codemaps/templates/template.codemap.md` - Use this template when creating new codemaps
+- **Codemap Template**: `codemaps/templates/template.codemap.md` - Use this template when creating new codemaps
+- **Projectmap Template**: `codemaps/templates/template.projectmap.md` - Use this template when creating new projectmaps
+- **Projectmap**: `codemaps/projectmap.md` - High-level project architecture and structure overview
 - **Existing Codemaps**: `codemaps/` directory - Review existing codemaps for reference and patterns
 
 ## Required Sections
+
+### Codemaps
 
 1. **Title**: Concise feature title describing the flow
 2. **Description**: Brief explanation of what the flow accomplishes and its purpose
@@ -28,6 +45,40 @@ A codemap is an index that shows a map to all relevant files for a given feature
 4. **Frontend Files**: ALL frontend files with clear subsection grouping
 5. **Backend Files**: ALL backend files with clear subsection grouping
 6. **Contracts**: ALL communication protocols between frontend and backend
+
+### Projectmap
+
+1. **Project Structure**: Comprehensive mapping of all major directories and their purposes
+   - Root configuration files and automation scripts
+   - Documentation directories and knowledge management structure
+   - Frontend application structure and organization patterns
+   - UI component hierarchy and design system architecture
+   - Utility libraries and shared code organization
+   - Backend service structure and API organization
+   - Data models and business logic architecture
+   - Database schema files and data layer definitions
+   - Repository layers and data access patterns
+   - Development tooling and support scripts
+2. **Monorepo Workspaces**: Entry points and workspace configuration for multi-package repositories
+3. **Tech Stack**: Complete technology inventory
+   - Package management and dependency coordination
+   - Frontend and backend framework ecosystems
+   - Core libraries and their architectural roles
+   - Third-party service clients and external API integrations
+   - Development tooling and quality assurance systems
+   - Testing infrastructure and validation approaches
+   - Build systems and deployment pipelines
+4. **Development Patterns**: Established practices and architectural conventions
+   - Authentication and authorization patterns
+   - Code organization and quality maintenance approaches
+   - Configuration management and feature control patterns
+   - User experience and interface design conventions
+   - Cross-cutting concerns and shared utilities
+5. **Testing Strategy**: Quality assurance approach and coverage
+   - Testing framework adoption and gaps
+   - Validation strategies across application layers
+   - Quality gates and automated checks
+   - Type safety and compile-time validation
 
 ## Required Details
 
@@ -111,6 +162,8 @@ A codemap is an index that shows a map to all relevant files for a given feature
 - **High clarity**: Each statement MUST be unambiguous
 - **Action-oriented**: Focus on what to do, not background theory
 - **Structured**: Use consistent formatting and organization
+- **Comprehensive coverage**: Document what exists AND explicitly note what is missing
+- **Practical focus**: Emphasize patterns and libraries that directly impact development workflow
 
 ## Primary Interactions
 
@@ -174,9 +227,24 @@ A codemap is an index that shows a map to all relevant files for a given feature
 
 ## Validation Rules
 
+### Codemaps
+
 1. Every codemap MUST include all required sections as defined in template
 2. File paths MUST be accurate and up-to-date relative to project root
 3. Contracts MUST match actual implementation with proper TypeScript interfaces
 4. Language MUST follow specified standards (MUST/SHOULD/MAY/NEVER)
 5. Updates MUST be made when feature files change
 6. Sequence diagrams MUST demonstrate complete flow between all layers
+
+### Projectmap
+
+1. Project structure MUST reflect actual directory layout and file organization
+2. Documentation structure MUST include all knowledge management directories and their purposes
+3. Tech stack information MUST match configuration files and dependency manifests
+4. Core libraries MUST be documented with their architectural roles and integration patterns
+5. Workspace definitions MUST align with monorepo configuration (if applicable)
+6. Entry points MUST be verified and functional
+7. Development patterns MUST document established practices and architectural conventions
+8. Testing strategy MUST explicitly document validation approaches or gaps where absent
+9. Architecture documentation MUST be updated when major structural changes occur
+10. Technology versions SHOULD be documented where relevant for major dependencies

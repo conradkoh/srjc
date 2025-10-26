@@ -246,6 +246,8 @@ A projectmap is a high-level architectural overview that documents the entire pr
 10. Technology versions SHOULD be documented where relevant for major dependencies
 
 ---
+
+<!-- OPENCODE USER INPUT BINDING: ALWAYS INCLUDE IN COMMANDS -->
 <!-- Ignore section if arguments are not replaced -->
 <userinput>
 $ARGUMENTS

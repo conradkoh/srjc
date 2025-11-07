@@ -13,7 +13,7 @@ export interface MdxLayoutProps {
  */
 export default function MdxLayout({ children }: MdxLayoutProps) {
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8 overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
       <article className="mdx-content space-y-0 w-full">{children}</article>
     </div>
   );

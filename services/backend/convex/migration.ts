@@ -97,8 +97,44 @@ export const setUserAccessLevelDefault = internalMutation({
 });
 
 /**
+ * Internal mutation to set all users with undefined accessLevel to 'user' in a single batch.
+ * WARNING: This processes all users at once and may timeout for large user bases.
+ * For large datasets, use migrateUserAccessLevels (action) instead.
+ *
+ * @returns Object with count of users updated
+ */
+export const setAllUndefinedAccessLevelsToUser = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    // Fetch all users with undefined accessLevel
+    const allUsers = await ctx.db.query('users').collect();
+
+    let updatedCount = 0;
+
+    // Update each user that has undefined accessLevel
+    for (const user of allUsers) {
+      if (user.accessLevel === undefined) {
+        await ctx.db.patch(user._id, {
+          accessLevel: 'user',
+        });
+        updatedCount++;
+      }
+    }
+
+    console.log(`Migration complete: Updated ${updatedCount} users to accessLevel: 'user'`);
+
+    return {
+      success: true,
+      updatedCount,
+      totalUsers: allUsers.length,
+    };
+  },
+});
+
+/**
  * Internal action to migrate all users to have explicit accessLevel values.
  * Sets undefined accessLevel fields to 'user' as the default.
+ * Processes users in batches to handle large datasets safely.
  */
 export const migrateUserAccessLevels = internalAction({
   args: { cursor: v.optional(v.string()) }, // Convex cursor for pagination

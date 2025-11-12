@@ -39,6 +39,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@biomejs/biome",
+      "bun",
       "esbuild",
       "nx",
       "sharp",

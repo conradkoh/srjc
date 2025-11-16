@@ -109,11 +109,11 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.27.3
-        version: 1.27.3(react@19.1.0)
+        specifier: ^1.29.1
+        version: 1.29.1(react@19.1.0)
       convex-helpers:
         specifier: ^0.1.104
-        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.3(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.12)
+        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.29.1(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.12)
       lucide-react:
         specifier: ^0.511.0
         version: 0.511.0(react@19.1.0)
@@ -3000,6 +3000,22 @@ packages:
 
   convex@1.27.3:
     resolution: {integrity: sha512-Ebr9lPgXkL7JO5IFr3bG+gYvHskyJjc96Fx0BBNkJUDXrR/bd9/uI4q8QszbglK75XfDu068vR0d/HK2T7tB9Q==}
+    engines: {node: '>=18.0.0', npm: '>=7.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@auth0/auth0-react': ^2.0.1
+      '@clerk/clerk-react': ^4.12.8 || ^5.0.0
+      react: ^18.0.0 || ^19.0.0-0 || ^19.0.0
+    peerDependenciesMeta:
+      '@auth0/auth0-react':
+        optional: true
+      '@clerk/clerk-react':
+        optional: true
+      react:
+        optional: true
+
+  convex@1.29.1:
+    resolution: {integrity: sha512-0+1/0QjOKJw5pk480HVMfhSKjYOM5dM67Ql5yF6FzrC/09WCXm5UVWd/MU8/OCB0YRgFUhrRsrWFSnW0w7iBSA==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -8049,9 +8065,9 @@ snapshots:
       typescript: 5.9.3
       zod: 4.0.5
 
-  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.3(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.12):
+  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.29.1(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.12):
     dependencies:
-      convex: 1.27.3(react@19.1.0)
+      convex: 1.29.1(react@19.1.0)
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.1.0
@@ -8066,6 +8082,13 @@ snapshots:
     dependencies:
       esbuild: 0.25.4
       jwt-decode: 4.0.0
+      prettier: 3.6.2
+    optionalDependencies:
+      react: 19.1.0
+
+  convex@1.29.1(react@19.1.0):
+    dependencies:
+      esbuild: 0.25.4
       prettier: 3.6.2
     optionalDependencies:
       react: 19.1.0

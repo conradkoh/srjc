@@ -109,11 +109,11 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.29.3
-        version: 1.29.3(react@19.2.1)
+        specifier: ^1.30.0
+        version: 1.30.0(react@19.2.1)
       convex-helpers:
-        specifier: ^0.1.105
-        version: 0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.1.12)
+        specifier: ^0.1.106
+        version: 0.1.106(@standard-schema/spec@1.0.0)(convex@1.30.0(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.1.12)
       lucide-react:
         specifier: ^0.511.0
         version: 0.511.0(react@19.2.1)
@@ -221,11 +221,11 @@ importers:
   services/backend:
     dependencies:
       convex:
-        specifier: ^1.29.3
-        version: 1.29.3(react@19.2.1)
+        specifier: ^1.30.0
+        version: 1.30.0(react@19.2.1)
       convex-helpers:
-        specifier: ^0.1.105
-        version: 0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.0.5)
+        specifier: ^0.1.106
+        version: 0.1.106(@standard-schema/spec@1.0.0)(convex@1.30.0(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.0.5)
       zod:
         specifier: ^4.0.5
         version: 4.0.5
@@ -240,8 +240,8 @@ importers:
         specifier: ^8.28.0
         version: 8.31.1(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3)
       convex-test:
-        specifier: ^0.0.39
-        version: 0.0.39(convex@1.29.3(react@19.2.1))
+        specifier: ^0.0.41
+        version: 0.0.41(convex@1.30.0(react@19.2.1))
       eslint:
         specifier: ^9
         version: 9.26.0(jiti@2.4.2)
@@ -2965,12 +2965,12 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  convex-helpers@0.1.105:
-    resolution: {integrity: sha512-B6EUQsBpLFcXpa1g/9Zsc7EaFHdaeMlPLCa/snSD+4hRBFMWKJjT589dZ/0Z40taBOQWC2tb81ciTNr4ctJb2w==}
+  convex-helpers@0.1.106:
+    resolution: {integrity: sha512-hWRe3yDaAVHMe4CUYw1YoQLiPZ1KIx6Kbf0w6UcRDx1BXpJgMCl3GVIMiSeYiA0PkbwjnIwGWIvoUVKloG5Tyw==}
     hasBin: true
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
-      convex: ^1.24.0
+      convex: ^1.25.4
       hono: ^4.0.5
       react: ^17.0.2 || ^18.0.0 || ^19.0.0
       typescript: ^5.5
@@ -2987,13 +2987,13 @@ packages:
       zod:
         optional: true
 
-  convex-test@0.0.39:
-    resolution: {integrity: sha512-Oyc2jbKwQoC7MoX1Cnt9ciiry2cjzoAVpzNCH1tXp7TDfYmBfSZ2E0ClOPHJSf4gYa+vtabi6NZnydbxBDbx4w==}
+  convex-test@0.0.41:
+    resolution: {integrity: sha512-GPHeYFOi70n7UtW0eCEQFVhzl/+m8PvbWkDCbKpHLybI1MrScf4sVpGeM0cC2qmtxiduxa2nLPbehPalhh9oyQ==}
     peerDependencies:
       convex: ^1.16.4
 
-  convex@1.29.3:
-    resolution: {integrity: sha512-tg5TXzMjpNk9m50YRtdp6US+t7ckxE4E+7DNKUCjJ2MupQs2RBSPF/z5SNN4GUmQLSfg0eMILDySzdAvjTrhnw==}
+  convex@1.30.0:
+    resolution: {integrity: sha512-YvFFxLg3bICP7u5hSVxW6BUYgI4LkWJHdim+9XrXUkdyOziloiQ21EbSCq6NNG2ycba2x7hsgxUKCGAhJmkv1g==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -8013,29 +8013,29 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.0.5):
+  convex-helpers@0.1.106(@standard-schema/spec@1.0.0)(convex@1.30.0(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.0.5):
     dependencies:
-      convex: 1.29.3(react@19.2.1)
+      convex: 1.30.0(react@19.2.1)
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.2.1
       typescript: 5.9.3
       zod: 4.0.5
 
-  convex-helpers@0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.1.12):
+  convex-helpers@0.1.106(@standard-schema/spec@1.0.0)(convex@1.30.0(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(zod@4.1.12):
     dependencies:
-      convex: 1.29.3(react@19.2.1)
+      convex: 1.30.0(react@19.2.1)
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.2.1
       typescript: 5.9.3
       zod: 4.1.12
 
-  convex-test@0.0.39(convex@1.29.3(react@19.2.1)):
+  convex-test@0.0.41(convex@1.30.0(react@19.2.1)):
     dependencies:
-      convex: 1.29.3(react@19.2.1)
+      convex: 1.30.0(react@19.2.1)
 
-  convex@1.29.3(react@19.2.1):
+  convex@1.30.0(react@19.2.1):
     dependencies:
       esbuild: 0.25.4
       prettier: 3.6.2
@@ -8397,8 +8397,8 @@ snapshots:
       '@next/eslint-plugin-next': 16.0.7
       eslint: 9.26.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2))
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.26.0(jiti@2.4.2))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.26.0(jiti@2.4.2))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.26.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.5(eslint@9.26.0(jiti@2.4.2))
       eslint-plugin-react-hooks: 7.0.1(eslint@9.26.0(jiti@2.4.2))
@@ -8420,7 +8420,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.26.0(jiti@2.4.2)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
@@ -8431,22 +8431,22 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.26.0(jiti@2.4.2))
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.26.0(jiti@2.4.2)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3)
       eslint: 9.26.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.26.0(jiti@2.4.2))
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.26.0(jiti@2.4.2)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -8457,7 +8457,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.26.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2)))(eslint@9.26.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.46.3(eslint@9.26.0(jiti@2.4.2))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.26.0(jiti@2.4.2))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3

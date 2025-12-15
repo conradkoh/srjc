@@ -2,6 +2,13 @@ import { PresentationCard, type PresentationInfo } from '@/components/presentati
 
 const PRESENTATIONS: PresentationInfo[] = [
   {
+    id: 'grow-love-for-god',
+    title: 'Grow in Love for God',
+    date: 'August 23, 2025',
+    description: 'Cell sharing: How can we grow in our love for God?',
+    path: '/presentations/20250823-grow-love-for-god',
+  },
+  {
     id: 'luke-10',
     title: 'Making a Difference',
     date: 'May 16, 2025',

@@ -1,9 +1,9 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { BookOpenIcon, HomeIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const navigation = [
   { name: 'Home', href: '/', icon: HomeIcon },

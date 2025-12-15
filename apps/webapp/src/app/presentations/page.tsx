@@ -1,5 +1,5 @@
-import { PresentationsGrid } from '@/components/presentations-grid';
 import type { Metadata } from 'next';
+import { PresentationsGrid } from '@/components/presentations-grid';
 
 export const metadata: Metadata = {
   title: 'Sharings | SRJC',

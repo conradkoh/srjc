@@ -1,7 +1,5 @@
 'use client';
 import { PresentationsGrid } from '@/components/presentations-grid';
-import { api } from '@workspace/backend/convex/_generated/api';
-import { useQuery } from 'convex/react';
 
 export default function Home() {
   return (

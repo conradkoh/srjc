@@ -27,15 +27,15 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  title: '✝︎ SRJC',
-  description: 'SRJC Cell Group',
+  title: 'SRJC',
+  description: 'Sri Ruthra Jothi Church Management',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: '✝︎ SRJC',
+    title: 'SRJC',
   },
-  applicationName: '✝︎ SRJC',
+  applicationName: 'SRJC',
   formatDetection: {
     telephone: false,
   },

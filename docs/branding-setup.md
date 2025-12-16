@@ -121,9 +121,52 @@ export const metadata: Metadata = {
 }
 ```
 
+## Usage Modes
+
+### Interactive Mode (Default)
+
+Run the setup script without any flags to use interactive mode with prompts:
+
+```bash
+pnpm run setup
+```
+
+### Non-Interactive Mode
+
+For CI/CD pipelines or automated setups, use non-interactive mode:
+
+```bash
+# With full branding configuration
+node scripts/setup.js --non-interactive \
+  --app-name "My Awesome App" \
+  --app-short-name "MyApp" \
+  --app-description "My app description" \
+  --landing-page-title "Welcome to My App" \
+  --package-name "my-awesome-app"
+
+# Skip branding setup entirely
+node scripts/setup.js --skip-branding
+
+# Non-interactive mode without branding options (skips branding)
+node scripts/setup.js -y
+```
+
+### Command Line Options
+
+```
+--help, -h                    Show help message
+--skip-branding               Skip branding setup entirely
+--non-interactive, -y         Run in non-interactive mode
+--app-name <name>             Full application name
+--app-short-name <name>       Short application name
+--app-description <desc>      Application description
+--landing-page-title <title>  Landing page title
+--package-name <name>         Package name (lowercase, hyphens)
+```
+
 ## Usage Examples
 
-### First Time Setup
+### First Time Setup (Interactive)
 
 ```bash
 $ pnpm run setup
@@ -186,7 +229,7 @@ $ pnpm run setup
 [... continues with Convex setup ...]
 ```
 
-### Skipping Branding Setup
+### Skipping Branding Setup (Interactive)
 
 ```bash
 Would you like to update the branding now? (yes/no) [yes]: no
@@ -194,6 +237,80 @@ Would you like to update the branding now? (yes/no) [yes]: no
 ⏭️  Skipping branding setup. You can run this script again later to configure branding.
 
 [... continues with Convex setup ...]
+```
+
+### Non-Interactive Mode Example
+
+```bash
+$ node scripts/setup.js --non-interactive \
+    --app-name "Task Manager Pro" \
+    --app-short-name "TaskPro" \
+    --app-description "Professional task management" \
+    --landing-page-title "Welcome to TaskPro" \
+    --package-name "task-manager-pro"
+
+🚀 Starting project setup...
+
+🔍 Checking application branding...
+
+📋 Current Branding Status:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  TEMPLATE PWA Manifest
+   apps/webapp/src/app/manifest.ts
+...
+
+🎨 Branding Setup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Running in non-interactive mode...
+
+Using provided branding options:
+  App Name: Task Manager Pro
+  Short Name: TaskPro
+  Description: Professional task management
+  Landing Page Title: Welcome to TaskPro
+  Package Name: task-manager-pro
+
+📝 Updating branding across all files...
+✅ Updated PWA manifest
+✅ Updated app layout metadata
+✅ Updated navigation header
+✅ Updated landing page
+✅ Updated package.json
+
+✅ Branding setup completed successfully!
+
+[... continues with Convex setup ...]
+```
+
+### CI/CD Pipeline Example
+
+```yaml
+# .github/workflows/setup.yml
+name: Setup Project
+on: [push]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Setup project with branding
+        run: |
+          node scripts/setup.js --non-interactive \
+            --app-name "${{ vars.APP_NAME }}" \
+            --app-short-name "${{ vars.APP_SHORT_NAME }}" \
+            --app-description "${{ vars.APP_DESCRIPTION }}" \
+            --landing-page-title "${{ vars.LANDING_TITLE }}" \
+            --package-name "${{ vars.PACKAGE_NAME }}"
 ```
 
 ## Manual Branding Updates

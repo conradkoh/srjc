@@ -31,6 +31,22 @@ This is a starter application using NextJS and Convex, managed with NX for monor
    - Show ⚠️ TEMPLATE for branding that still uses default values
    - Only prompt for updates if template values are detected
 
+   **Non-Interactive Mode**: For CI/CD or automated setups:
+   ```bash
+   node scripts/setup.js --non-interactive \
+     --app-name "My App" \
+     --app-short-name "MyApp" \
+     --app-description "Description" \
+     --landing-page-title "Welcome" \
+     --package-name "my-app"
+   
+   # Or skip branding entirely
+   node scripts/setup.js --skip-branding
+   
+   # Show all options
+   node scripts/setup.js --help
+   ```
+
 3. Run `pnpm dev` in the root directory to start the NextJS application and Convex backend
 
 #### Manual Setup (Alternative)

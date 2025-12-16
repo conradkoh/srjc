@@ -8,6 +8,77 @@ const readline = require('node:readline');
 const backendEnvPath = path.join(__dirname, '..', 'services', 'backend', '.env.local');
 const webappEnvPath = path.join(__dirname, '..', 'apps', 'webapp', '.env.local');
 
+// Parse command line arguments
+const args = process.argv.slice(2);
+const cliArgs = {
+  skipBranding: args.includes('--skip-branding'),
+  nonInteractive: args.includes('--non-interactive') || args.includes('-y'),
+  appName: getArgValue(args, '--app-name'),
+  appShortName: getArgValue(args, '--app-short-name'),
+  appDescription: getArgValue(args, '--app-description'),
+  landingPageTitle: getArgValue(args, '--landing-page-title'),
+  packageName: getArgValue(args, '--package-name'),
+  help: args.includes('--help') || args.includes('-h'),
+};
+
+/**
+ * Get the value of a command line argument
+ */
+function getArgValue(args, flag) {
+  const index = args.indexOf(flag);
+  if (index !== -1 && index + 1 < args.length) {
+    return args[index + 1];
+  }
+  return null;
+}
+
+/**
+ * Show help message
+ */
+function showHelp() {
+  console.log(`
+Usage: node scripts/setup.js [OPTIONS]
+
+Setup script for Next Convex Starter App. Initializes Convex backend and
+configures application branding.
+
+OPTIONS:
+  --help, -h                    Show this help message
+  --skip-branding               Skip branding setup entirely
+  --non-interactive, -y         Run in non-interactive mode (skip prompts)
+  
+  Branding Options (requires --non-interactive):
+  --app-name <name>             Full application name
+  --app-short-name <name>       Short application name (for navigation)
+  --app-description <desc>      Application description
+  --landing-page-title <title>  Landing page title
+  --package-name <name>         Package name (lowercase, hyphens only)
+
+EXAMPLES:
+  # Interactive mode (default)
+  node scripts/setup.js
+  
+  # Skip branding setup
+  node scripts/setup.js --skip-branding
+  
+  # Non-interactive mode with branding
+  node scripts/setup.js --non-interactive \\
+    --app-name "My Awesome App" \\
+    --app-short-name "MyApp" \\
+    --app-description "My app description" \\
+    --landing-page-title "Welcome to My App" \\
+    --package-name "my-awesome-app"
+  
+  # Non-interactive mode, skip branding if already configured
+  node scripts/setup.js -y
+
+NOTES:
+  - The script is idempotent and safe to run multiple times
+  - In non-interactive mode without branding options, branding setup is skipped
+  - Branding is only updated if template values are detected
+`);
+}
+
 // Create readline interface for user interaction
 const rl = readline.createInterface({
   input: process.stdin,
@@ -351,33 +422,71 @@ function updatePackageJson(packageName) {
 /**
  * Perform branding setup
  */
-async function setupBranding() {
+async function setupBranding(nonInteractive = false, brandingOptions = {}) {
   console.log('\n🎨 Branding Setup');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log("Let's customize your app branding. Press Enter to keep the suggested values.\n");
+
+  if (nonInteractive) {
+    console.log('Running in non-interactive mode...\n');
+  } else {
+    console.log("Let's customize your app branding. Press Enter to keep the suggested values.\n");
+  }
 
   // Gather branding information
-  const appName = await promptUser('Full application name (for PWA & metadata)', 'My Awesome App');
+  let appName;
+  let appShortName;
+  let appDescription;
+  let landingPageTitle;
+  let packageName;
 
-  const appShortName = await promptUser(
-    'Short application name (for navigation & PWA)',
-    appName.length > 15 ? appName.substring(0, 15) : appName
-  );
+  if (nonInteractive && brandingOptions.appName) {
+    // Use provided options
+    appName = brandingOptions.appName;
+    appShortName =
+      brandingOptions.appShortName || (appName.length > 15 ? appName.substring(0, 15) : appName);
+    appDescription = brandingOptions.appDescription || `${appName} - Built with Next.js and Convex`;
+    landingPageTitle = brandingOptions.landingPageTitle || appName;
+    packageName =
+      brandingOptions.packageName ||
+      appName
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .replace(/-+/g, '-');
 
-  const appDescription = await promptUser(
-    'Application description',
-    `${appName} - Built with Next.js and Convex`
-  );
+    console.log('Using provided branding options:');
+    console.log(`  App Name: ${appName}`);
+    console.log(`  Short Name: ${appShortName}`);
+    console.log(`  Description: ${appDescription}`);
+    console.log(`  Landing Page Title: ${landingPageTitle}`);
+    console.log(`  Package Name: ${packageName}\n`);
+  } else if (nonInteractive) {
+    console.log('⚠️  Non-interactive mode requires branding options.');
+    console.log('   Skipping branding setup. Run with --help for usage.\n');
+    return;
+  } else {
+    // Interactive mode
+    appName = await promptUser('Full application name (for PWA & metadata)', 'My Awesome App');
 
-  const landingPageTitle = await promptUser('Landing page title', appName);
+    appShortName = await promptUser(
+      'Short application name (for navigation & PWA)',
+      appName.length > 15 ? appName.substring(0, 15) : appName
+    );
 
-  const packageName = await promptUser(
-    'Package name (lowercase, hyphens only)',
-    appName
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '-')
-      .replace(/-+/g, '-')
-  );
+    appDescription = await promptUser(
+      'Application description',
+      `${appName} - Built with Next.js and Convex`
+    );
+
+    landingPageTitle = await promptUser('Landing page title', appName);
+
+    packageName = await promptUser(
+      'Package name (lowercase, hyphens only)',
+      appName
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .replace(/-+/g, '-')
+    );
+  }
 
   console.log('\n📝 Updating branding across all files...');
 
@@ -408,20 +517,48 @@ async function setupBranding() {
  * Check and prompt for branding updates
  */
 async function checkBranding() {
+  // Skip branding if requested
+  if (cliArgs.skipBranding) {
+    console.log('\n⏭️  Skipping branding setup (--skip-branding flag).\n');
+    return;
+  }
+
   console.log('\n🔍 Checking application branding...');
 
   const status = detectBrandingStatus();
   displayBrandingStatus(status);
 
   if (needsBrandingUpdate(status)) {
-    const answer = await promptUser('\nWould you like to update the branding now? (yes/no)', 'yes');
+    if (cliArgs.nonInteractive) {
+      // Non-interactive mode
+      const brandingOptions = {
+        appName: cliArgs.appName,
+        appShortName: cliArgs.appShortName,
+        appDescription: cliArgs.appDescription,
+        landingPageTitle: cliArgs.landingPageTitle,
+        packageName: cliArgs.packageName,
+      };
 
-    if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
-      await setupBranding();
+      if (cliArgs.appName) {
+        await setupBranding(true, brandingOptions);
+      } else {
+        console.log('\n⏭️  Non-interactive mode without branding options.');
+        console.log('   Skipping branding setup. Run with --help for usage.\n');
+      }
     } else {
-      console.log(
-        '\n⏭️  Skipping branding setup. You can run this script again later to configure branding.'
+      // Interactive mode
+      const answer = await promptUser(
+        '\nWould you like to update the branding now? (yes/no)',
+        'yes'
       );
+
+      if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
+        await setupBranding();
+      } else {
+        console.log(
+          '\n⏭️  Skipping branding setup. You can run this script again later to configure branding.'
+        );
+      }
     }
   } else {
     console.log('✅ All branding appears to be configured!\n');
@@ -430,6 +567,12 @@ async function checkBranding() {
 
 // Main function to run the setup
 async function setup() {
+  // Show help if requested
+  if (cliArgs.help) {
+    showHelp();
+    process.exit(0);
+  }
+
   console.log('🚀 Starting project setup...');
 
   // Check branding first (always run, idempotent)

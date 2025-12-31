@@ -10,8 +10,9 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   // Fix Turbopack workspace root detection in monorepo
   // Points to the monorepo root where pnpm-lock.yaml is located
+  // Use absolute path to ensure correct resolution
   turbopack: {
-    root: path.join(__dirname, '../../'),
+    root: path.resolve(__dirname, '../../'),
   },
 };
 

@@ -65,7 +65,7 @@ class AuthErrorBoundaryClass extends Component<
     throw error;
   }
 
-  componentDidCatch(error: Error) {
+  componentDidCatch(_error: Error) {
     if (this.state.hasAuthError) {
       // Trigger redirect via the callback
       this.props.onAuthError();
@@ -116,5 +116,3 @@ export function AuthErrorBoundary({ children, fallback }: AuthErrorBoundaryProps
     </AuthErrorBoundaryClass>
   );
 }
-
-

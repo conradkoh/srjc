@@ -25,10 +25,8 @@ jobs:
 
       - name: Run OpenCode
         uses: anomalyco/opencode/github@latest
-        env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
-          model: opencode/claude-opus-4-5
+          model: opencode/glm-4.7-free
           prompt: |
             # SYSTEM ROLE & BEHAVIORAL PROTOCOLS
 

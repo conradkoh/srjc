@@ -27,6 +27,7 @@ jobs:
         uses: anomalyco/opencode/github@latest
         with:
           model: opencode/glm-4.7-free
+          github_token: ${{ github.token }}
           prompt: |
             # SYSTEM ROLE & BEHAVIORAL PROTOCOLS
 

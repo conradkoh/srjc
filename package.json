@@ -2,17 +2,18 @@
   "name": "next-convex-starter-app",
   "version": "1.0.0",
   "description": "",
+  "packageManager": "pnpm@10.15.1",
   "main": "index.js",
   "scripts": {
-    "test": "nx run-many --target=test --projects=@workspace/webapp,@workspace/backend",
-    "test:watch": "nx run-many --target=test:watch --projects=@workspace/webapp,@workspace/backend",
-    "dev": "nx run @workspace/webapp:dev",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "dev": "turbo run dev --filter=@workspace/webapp",
     "setup": "node scripts/setup.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "biome format .",
     "format:fix": "biome format --write .",
-    "typecheck": "nx run-many --target=typecheck --projects=@workspace/webapp,@workspace/backend",
+    "typecheck": "turbo run typecheck",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -31,7 +32,6 @@
     "@biomejs/biome": "2.1.2",
     "@convex-dev/eslint-plugin": "^1.1.1",
     "@eslint/eslintrc": "^3",
-    "@nx/workspace": "22.5.0",
     "@types/node": "^20.17.24",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "@typescript-eslint/parser": "^8.49.0",
@@ -44,7 +44,7 @@
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
-    "nx": "22.5.0",
+    "turbo": "^2.4.4",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -55,8 +55,8 @@
       "@biomejs/biome",
       "bun",
       "esbuild",
-      "nx",
       "sharp",
+      "turbo",
       "unrs-resolver"
     ],
     "overrides": {

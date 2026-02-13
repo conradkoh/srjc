@@ -26,12 +26,7 @@
       "inputs": ["$TURBO_DEFAULT$"],
       "cache": true
     },
-    "@workspace/webapp#dev": {
-      "dependsOn": ["@workspace/backend#dev"],
-      "cache": false,
-      "persistent": true
-    },
-    "@workspace/backend#dev": {
+    "dev": {
       "cache": false,
       "persistent": true
     }
